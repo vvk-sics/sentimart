@@ -8,3 +8,5 @@ __pycache__/
 
 # Ignore SQLite database (optional)
 db.sqlite3
+
+media

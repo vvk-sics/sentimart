@@ -1,0 +1,28 @@
+<h2 class="text-xl font-semibold mb-4">Add Variant for {{ product.name }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="mb-4">
+        <label class="block text-gray-700">Select Attribute Values</label>
+        {% for attr in attribute_values %}
+            <label class="inline-block mr-2">
+                <input type="checkbox" name="attribute_values" value="{{ attr.id }}">
+                {{ attr }}
+            </label>
+        {% endfor %}
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Variant Price</label>
+        <input type="text" name="price" class="border rounded w-full p-2">
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">Variant Stock</label>
+        <input type="number" name="stock" class="border rounded w-full p-2">
+    </div>
+
+    <button class="bg-teal-600 text-white p-2 rounded hover:bg-teal-700">Add Variant</button>
+    <a href="{% url 'seller_dashboard' %}">Completed</a>
+</form>

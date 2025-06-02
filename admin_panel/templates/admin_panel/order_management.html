@@ -1,0 +1,121 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+</aside>
+<div class="container mx-auto p-4">
+    <h1 class="text-center">Order Management</h1>
+    <div class="flex space-x-4 my-6 justify-center items-center">
+        <a href="{% url 'order_management' %}?status=Pending" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Pending Orders</a>
+        <a href="{% url 'order_management' %}?status=Shipped" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Shipped Orders</a>
+        <a href="{% url 'order_management' %}?status=Delivered" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Completed Orders</a>
+    </div>
+
+    <!-- {% for order in orders %}
+    <div class="order-card">
+        <h4>Order #{{ order.id }}</h4>
+        <ul>
+        {% for item in order.items.all %}
+            <li>{{ item.product.name }} (Qty: {{ item.quantity }})</li>
+        {% endfor %}
+        </ul>
+
+        <form action="{% url 'ship_order' order.id %}" method="POST">
+        {% csrf_token %}
+        <select name="agent" required>
+            <option value="">Assign Agent</option>
+            {% for agent in agents %}
+            <option value="{{ agent.id }}">{{ agent.user.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Ship Order</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>No pending orders.</p>
+    {% endfor %} -->
+    {% for order in orders %}
+    <div class="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl">
+      <h2 class="text-2xl font-semibold mb-8 text-gray-800">Order details</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Left Column: User Info and Actions -->
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <div
+              class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0"
+            >
+              <img
+                src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20man%20with%20glasses%20wearing%20a%20blue%20shirt%2C%20business%20casual%2C%20clean%20background%2C%20high%20quality%20portrait&width=200&height=200&seq=1&orientation=squarish"
+                alt="User avatar"
+                class="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div class="flex flex-col">
+              <h3 class="font-medium text-gray-900">{{order.user.username}}</h3>
+              <p class="text-gray-600 text-sm mt-1">{{order.user.email}}</p>
+              <p class="text-gray-600 text-sm mt-1">{{order.user.buyer_profile.phone_number}}</p>
+            </div>
+          </div>
+
+          <!-- <a
+            href="#"
+            class="text-primary hover:text-primary/80 font-medium inline-block"
+            >View ordered List</a
+          > -->
+          {% if order.status == 'Pending' %}
+          <div class="relative">
+            <form action="{% url 'ship_order' order.id %}" method="POST">
+                {% csrf_token %}
+                <select
+                id="agentSelect"
+                class="w-full appearance-none bg-gray-100 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                >
+                <option value="" selected disabled>Assign delivery agent</option>
+                {% for agent in agents %}
+                <option value="{{ agent.id }}">{{ agent.user.username }}</option>
+                {% endfor %}
+                </select>
+                <button class="bg-[#4C888E] text-white py-2 px-6 rounded mt-4" type="submit">Ship Order</button>
+             </form>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+            >
+            </div>
+          {% endif %}
+          </div>
+        </div>
+
+        <!-- Right Column: Delivery Date and Status -->
+        <div class="space-y-6">
+          <div class="flex flex-col">
+            <label class="text-gray-600 text-sm mb-2"
+              >Expected delivery date</label
+            >
+            <input
+              type="text"
+              value="Dec30,2024"
+              readonly
+              class="py-3 px-4 border border-gray-200 rounded bg-gray-50 text-gray-700 focus:outline-none"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-gray-600 text-sm mb-2">Status</label>
+            <div class="relative">
+              <div
+                id="statusDisplay"
+                class="flex items-center justify-center w-full py-3 px-4 border border-gray-200 rounded bg-white text-gray-700 cursor-pointer"
+              >
+                <span class="{% if order.status == 'Pending' %}text-red-500 {% elif order.status == 'Shipped' %} text-blue-500 {% elif order.status == 'Delivered' %} text-green-500 {% endif %}">{{order.status}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>No pending orders.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+<form method="post">
+  {% csrf_token %}
+  <label class="block mb-2">Add Product Attribute (e.g., Size, Color):</label>
+  <input type="text" name="name" placeholder="Enter attribute name" class="border p-2 rounded w-full mb-4">
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Attribute</button>
+  <a href="{% url 'seller_dashboard' %}">go back</a>
+</form>
+
+{% if messages %}
+  <ul class="mt-4 text-green-600">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}

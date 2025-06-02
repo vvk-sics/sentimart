@@ -4,7 +4,7 @@ from accounts.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
-from products.models import Product
+from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant
 from categories.models import Category
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -108,10 +108,52 @@ def add_product(request):
             image=image,
             stock=stock
         )
-        return redirect('seller_dashboard')
+        return redirect('add_variants', product_id=product.id)
     
     categories = Category.objects.all()
     return render(request, 'seller/add_product.html', {'categories': categories})
+
+def add_variants(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == 'POST':
+        price = request.POST.get('price')
+        stock = request.POST.get('stock')
+        selected_values = request.POST.getlist('attribute_values')
+
+        variant = ProductVariant.objects.create(product=product, price=price, stock=stock)
+        variant.attributes.set(selected_values)
+        variant.save()
+
+        messages.success(request, "Variant added successfully.")
+        return redirect('add_variants', product_id=product.id)
+
+    attribute_values = ProductAttributeValue.objects.all()
+    return render(request, 'seller/add_variants.html', {
+        'product': product,
+        'attribute_values': attribute_values
+    })
+
+def add_product_attribute(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            ProductAttribute.objects.create(name=name)
+            messages.success(request, 'Attribute created successfully!')
+            return redirect('add_product_attribute')
+    return render(request, 'seller/add_attribute.html')
+
+
+def add_product_attribute_value(request):
+    attributes = ProductAttribute.objects.all()
+    if request.method == 'POST':
+        attribute_id = request.POST.get('attribute')
+        value = request.POST.get('value')
+        attribute = ProductAttribute.objects.get(id=attribute_id)
+        ProductAttributeValue.objects.create(attribute=attribute, value=value)
+        messages.success(request, 'Attribute value added successfully!')
+        return redirect('add_product_attribute_value')
+    return render(request, 'seller/add_attribute_value.html', {'attributes': attributes})
 
 def view_products(request):
     status=request.GET.get('status')

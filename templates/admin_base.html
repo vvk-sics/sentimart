@@ -4,9 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
     <style>
         body {
             font-family: "Inter", sans-serif;
@@ -41,7 +45,7 @@
     </script>
 </head>
 
-<body class="bg-white text-black">
+<body class="bg-white text-black" x-data="{ showModal: false }">
     <div class="flex h-[100vh] border border-t-0 border-b-0 border-l-0 ">
         <!-- Sidebar -->
         <aside class="w-64 flex flex-col border-r border-[#4a7a82]">
@@ -62,8 +66,8 @@
                       </div>
                     </div>
                   </div>
-                <p class="mt-4 text-center text-sm">user !</p>
-                <p class="text-center text-xs mt-1">user1234@gmail.com</p>
+                <p class="mt-4 text-center text-sm">{{user.username}}</p>
+                <p class="text-center text-xs mt-1">{{user.email}}</p>
             </div>
             <!-- Include Lucide Icons via CDN -->
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -103,7 +107,7 @@
       <a href="{% url 'low_stock_products' %}?status=out_of_stock" class="block hover:text-[#4a7a82]">stock out products</a>
     </div>
   </div>
-  <a href="#" class="flex items-center space-x-3 hover:text-[#4a7a82]">
+  <a href="{% url 'order_management' %}?status=Pending" class="flex items-center space-x-3 hover:text-[#4a7a82]">
     <i data-lucide="file-text" class="w-5 h-5"></i>
     <span>Orders</span>
   </a>
@@ -122,16 +126,55 @@
     <i data-lucide="settings" class="w-5 h-5"></i>
     <span>Settings</span>
   </a> -->
-  <a href="{% url 'logout' %}" class="flex items-center space-x-3 hover:text-[#4a7a82]">
+  <button @click="showModal = true" class="flex items-center space-x-3 hover:text-[#4a7a82]">
     <i data-lucide="log-out" class="w-5 h-5"></i>
     <span>Log out</span>
-  </a>
+  </button>
 </nav>
 
 <script>
   lucide.createIcons();
 </script>
+<div
+    x-show="showModal"
+    x-cloak
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-3xl p-8 w-96 text-center relative shadow-lg">
+      
+      <!-- Close Button -->
+      <button @click="showModal = false" class="absolute top-4 right-4 text-2xl">&times;</button>
+      
+      <!-- Icon -->
+      <div class="text-5xl text-red-500 mb-4">
+        ➜
+      </div>
 
+      <!-- Message -->
+      <h2 class="text-2xl font-semibold mb-2">Ready To Leave?</h2>
+      <p class="text-gray-600 mb-6">Are you about to log out from the admin panel</p>
+
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4">
+        <button
+          @click="showModal = false"
+          class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        
+          <!-- CSRF token if using Django -->
+          <a
+            href="{% url 'logout' %}"
+            type="submit"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Log out
+          </a>
+        
+      </div>
+    </div>
+  </div>
 {% block content %}
 
 {% endblock %}

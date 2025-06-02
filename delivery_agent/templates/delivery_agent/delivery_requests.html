@@ -2,186 +2,36 @@
 {% load static %}
 {% block content %}
 <div class="flex space-x-4 mb-6 justify-center items-center">
-    <a href="{% url 'delivery_requests' %}?status=placed" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Delivery Requests</a>
-    <a href="{% url 'delivery_requests' %}?status=pending" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Pending Delivery</a>
-    <a href="{% url 'delivery_requests' %}?status=delivered" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Completed Delivery</a>
+    <a href="{% url 'delivery_requests' %}" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Delivery Requests</a>
+    <a href="{% url 'delivery_requests' %}" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Pending Delivery</a>
+    <a href="{% url 'delivery_requests' %}" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Completed Delivery</a>
 </div>
-{% if status == 'placed' %}
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {% for order in orders %}
-        <div class="rounded-lg shadow-md p-4 bg-gray-100 w-full md:w-[450px] mx-auto my-4">
-            <h2 class="font-bold text-xl">Order No: {{ order.id }}</h2>
-            <div class="flex justify-evenly gap-4">
-                <div class="mt-2">
-                    <p><strong>Order Date and time:</strong><br>{{ order.created_at|date:"d/m/Y h:i a" }}</p>
-                    <p class="mt-2"><strong>Order details:</strong> 
-                        <a href="" class="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">View</a>
-                    </p>
-                    
-                    <p class="mt-2"><strong>Customer:</strong><br>
-                        📍 {{ order.delivery_address }}
-                    </p>
-                </div>
-                
-                <div>
-                    <p class="mt-2"><strong>Seller:</strong><br>
-                        {% if order.items.all %}
-                            {% with seller=order.items.first.product.seller %}
-                                {% with profile=seller.seller_profile %}
-                                    {{ seller.username }}<br>
-                                    📞 {{ profile.phone_number }}<br>
-                                    🏢 {{ profile.business_address }}
-                                {% endwith %}
-                            {% endwith %}
-                        {% else %}
-                            No seller info available.
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-            <div class="mt-4 flex justify-center gap-4">
-                <form method="post" action="{% url 'accept_order' order.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Approve</button>
-                </form>
-                <form method="post" action="{% url 'reject_order' order.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Reject</button>
-                </form>
-            </div>
-        </div>
-        {% empty %}
-            <p>No delivery requests available.</p>
-        {% endfor %}
-    {% elif status == 'pending' %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    {% for order in orders %}
-        <div class="rounded-lg shadow-md p-4 bg-gray-100 w-full md:w-[450px] mx-auto my-4">
-            <h2 class="font-bold text-xl">Order No: {{ order.id }}</h2>
-            <div class="flex justify-evenly gap-4">
-                <div class="mt-2">
-                    <p><strong>Order Date and time:</strong><br>{{ order.created_at|date:"d/m/Y h:i a" }}</p>
-                    <p class="mt-2"><strong>Order details:</strong> 
-                        <a href="" class="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">View</a>
-                    </p>
-                    
-                    <p class="mt-2"><strong>Customer:</strong><br>
-                        📍 {{ order.delivery_address }}
-                    </p>
-                </div>
-                
-                <div>
-                    <p class="mt-2"><strong>Seller:</strong><br>
-                        {% if order.items.all %}
-                            {% with seller=order.items.first.product.seller %}
-                                {% with profile=seller.seller_profile %}
-                                    {{ seller.username }}<br>
-                                    📞 {{ profile.phone_number }}<br>
-                                    🏢 {{ profile.business_address }}
-                                {% endwith %}
-                            {% endwith %}
-                        {% else %}
-                            No seller info available.
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-            <form method="post" action="{% url 'update_order_status' order.id %}" class="mt-4 text-center">
-                {% csrf_token %}
-                <select name="new_status" class="border px-2 py-1 rounded">
-                    <option value="transit">About to Deliver</option>
-                    <option value="delivered">Delivered</option>
-                </select>
-                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded ml-2">Update Status</button>
-            </form>
-
-            <button onclick="openIssueForm({{ order.id }})" class="mt-4 bg-red-600 text-white px-4 py-2 rounded block mx-auto">Generate Issue</button>
-
-         
-            <div id="issue-form-{{ order.id }}" class="hidden mt-2 text-center bg-white border p-4 rounded shadow">
-                <form method="post" action="{% url 'report_order_issue' order.id %}">
-                    {% csrf_token %}
-                    <select name="issue_reason" class="border p-1 rounded w-full mb-2">
-                        <option value="address incorrect">Address not correct</option>
-                        <option value="phone unreachable">Phone number not reachable</option>
-                        <option value="customer unavailable">Customer unavailable at the delivery address</option>
-                    </select>
-                    <textarea name="additional_notes" class="w-full border p-2 rounded mb-2" rows="2" placeholder="Additional notes (optional)"></textarea>
-                    <button type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded">Submit Issue</button>
-                </form>
-            </div>
-        </div>
-        {% empty %}
-            <p>No delivery requests available.</p>
-        {% endfor %}
-        {% elif status == 'delivered' %}
-        <div class="w-full max-w-4xl mx-auto text-white rounded-xl shadow-lg p-4 mb-6">
-        {% for order in orders %}
-            <div class="bg-[#5B8C8A] text-white rounded-xl shadow-lg p-4 mb-6">
-            <h2 class="text-lg font-bold">SI NO.{{ forloop.counter }}</h2>
-            <h3 class="text-md font-semibold mt-2">Order ID: <span class="font-bold text-white">{{ order.id }}</span></h3>
-
-            <div class="bg-white text-black mt-4 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center">
-        
-                <div>
-                <h4 class="font-bold text-sm">Customer</h4>
-                <p class="font-medium">{{ order.user.username }}</p>
-                <p class="text-sm text-gray-700">📞 {{ order.user.buyer_profile.phone_number }}</p>
-                <p class="text-sm text-gray-700">📍 {{ order.delivery_address }}</p>
-
-                <p class="mt-4 text-sm">Total amount for the order: <span class="font-semibold">₹{{ order.total_price }}</span></p>
-                <p class="text-sm">Order date and time: <span class="font-semibold">{{ order.created_at|date:"d/m/Y h:iA" }}</span></p>
-                </div>
-
-              
-                <div class="my-4 md:my-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="97" height="96" viewBox="0 0 97 96" fill="none">
-                <g opacity="0.3">
-                <path d="M48.5 84C68.3823 84 84.5 67.8823 84.5 48C84.5 28.1177 68.3823 12 48.5 12C28.6177 12 12.5 28.1177 12.5 48C12.5 67.8823 28.6177 84 48.5 84Z" fill="#FAFAFA"/>
-                <path opacity="0.2" d="M48.5 7.5C37.3609 7.5 26.678 11.925 18.8015 19.8015C10.925 27.678 6.5 38.3609 6.5 49.5C6.5 60.6391 10.925 71.322 18.8015 79.1985C26.678 87.075 37.3609 91.5 48.5 91.5C59.6391 91.5 70.322 87.075 78.1985 79.1985C86.075 71.322 90.5 60.6391 90.5 49.5H78.5C78.5 53.4397 77.724 57.3407 76.2164 60.9805C74.7087 64.6203 72.499 67.9274 69.7132 70.7132C66.9274 73.499 63.6203 75.7087 59.9805 77.2164C56.3407 78.724 52.4397 79.5 48.5 79.5C40.5435 79.5 32.9129 76.3393 27.2868 70.7132C21.6607 65.0871 18.5 57.4565 18.5 49.5C18.5 41.5435 21.6607 33.9129 27.2868 28.2868C32.9129 22.6607 40.5435 19.5 48.5 19.5V7.5Z" fill="black"/>
-                <path d="M48.5 6C37.3609 6 26.678 10.425 18.8015 18.3015C10.925 26.178 6.5 36.8609 6.5 48C6.5 59.1391 10.925 69.822 18.8015 77.6985C26.678 85.575 37.3609 90 48.5 90C59.6391 90 70.322 85.575 78.1985 77.6985C86.075 69.822 90.5 59.1391 90.5 48H78.5C78.5 55.9565 75.3393 63.5871 69.7132 69.2132C64.0871 74.8393 56.4565 78 48.5 78C40.5435 78 32.9129 74.8393 27.2868 69.2132C21.6607 63.5871 18.5 55.9565 18.5 48C18.5 40.0435 21.6607 32.4129 27.2868 26.7868C32.9129 21.1607 40.5435 18 48.5 18V6Z" fill="#4C888E"/>
-                <path opacity="0.2" d="M48.5 6C37.3609 6 26.678 10.425 18.8015 18.3015C10.925 26.178 6.5 36.8609 6.5 48C6.51534 48.2502 6.53292 48.5002 6.55273 48.75C6.74918 37.7505 11.2535 27.2672 19.0975 19.5536C26.9415 11.8401 37.4988 7.51206 48.5 7.5V6ZM78.5 48C78.5 55.9565 75.3393 63.5871 69.7132 69.2132C64.0871 74.8393 56.4565 78 48.5 78C40.6829 77.9856 33.1802 74.9207 27.589 69.4575C21.9978 63.9944 18.7599 56.5647 18.5645 48.75C18.5398 48.9997 18.5183 49.2497 18.5 49.5C18.5 57.4565 21.6607 65.0871 27.2868 70.7132C32.9129 76.3393 40.5435 79.5 48.5 79.5C52.4397 79.5 56.3407 78.724 59.9805 77.2164C63.6203 75.7087 66.9274 73.499 69.7132 70.7132C72.499 67.9274 74.7087 64.6203 76.2164 60.9805C77.724 57.3407 78.5 53.4397 78.5 49.5H90.3916C90.4367 49.0007 90.4728 48.5006 90.5 48H78.5Z" fill="white"/>
-                <path opacity="0.2" d="M84.5 18L47 48L35 37.5L27.5 46.5L47 63L92 27L84.5 18Z" fill="black"/>
-                <path d="M84.5 16.5L47 46.5L35 36L27.5 45L47 61.5L92 25.5L84.5 16.5Z" fill="#319F43"/>
-                <path opacity="0.2" d="M84.5 16.5L47 46.5L35 36L27.5 45L28.2324 45.6211L35 37.5L47 48L84.5 18L91.25 26.1006L92 25.5L84.5 16.5Z" fill="white"/>
-                </g>
-                </svg>
-                </div>
-
-               
-                <div class="text-right">
-                <h4 class="font-bold text-sm">Seller</h4>
-                {% if order.items.all %}
-                {% with seller=order.items.first.product.seller %}
-                    {% with profile=seller.seller_profile %}
-                <p class="font-medium">{{ seller.username }}</p>
-                <p class="text-sm text-gray-700">📞 {{ profile.phone_number }}</p>
-                <p class="text-sm text-gray-700">📍 {{ profile.business_address }}</p>
-                {% endwith %}
-                    {% endwith %}
-                {% else %}
-                    No seller info available.
-                {% endif %}
-                <a href="{{ order.invoice_url }}" class="text-sm text-blue-600 underline mt-2 block">Invoice</a>
-                </div>
-            </div>
-            </div>
-
-        {% empty %}
-            <p class="text-center text-gray-500">No completed deliveries found.</p>
-        {% endfor %}
-        </div>
-        
+{% for order in orders %}
+  <div>
+    <h4>Order #{{ order.id }} - {{ order.user.username }}</h4>
+    <p>Status: {{ order.status }}</p>
+    
+    {% if order.status == "Shipped" %}
+      <form action="{% url 'accept_order' order.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Accept</button>
+      </form>
+      
+      <form action="{% url 'reject_order' order.id %}" method="post">
+        {% csrf_token %}
+        <textarea name="issue_reason" placeholder="Reason for rejection" required></textarea>
+        <button type="submit">Reject</button>
+      </form>
+    {% elif order.status == "About to Deliver" %}
+      <form action="{% url 'mark_delivered' order.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Mark as Delivered</button>
+      </form>
     {% endif %}
+  </div>
+{% empty %}
+  <p>No assigned orders.</p>
+{% endfor %}
 </div>
-<script>
-function openIssueForm(orderId) {
-    const form = document.getElementById(`issue-form-${orderId}`);
-    if (form.classList.contains("hidden")) {
-        form.classList.remove("hidden");
-    } else {
-        form.classList.add("hidden");
-    }
-}
-</script>
+
 {% endblock %}

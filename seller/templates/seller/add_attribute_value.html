@@ -1,0 +1,23 @@
+<form method="post">
+  {% csrf_token %}
+  <label class="block mb-2">Select Attribute:</label>
+  <select name="attribute" class="border p-2 rounded w-full mb-4">
+    {% for attr in attributes %}
+      <option value="{{ attr.id }}">{{ attr.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label class="block mb-2">Value (e.g., Red, Medium):</label>
+  <input type="text" name="value" placeholder="Enter value" class="border p-2 rounded w-full mb-4">
+
+  <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Add Value</button>
+    <a href="{% url 'seller_dashboard' %}">go back</a>
+</form>
+
+{% if messages %}
+  <ul class="mt-4 text-green-600">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}

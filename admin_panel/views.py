@@ -3,11 +3,15 @@ from seller.models import Seller
 from buyer.models import Buyer
 from delivery_agent.models import DeliveryAgent
 from categories.models import Category
-from products.models import Product
+from products.models import Product, Order
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from django.urls import reverse
 # Create your views here.
 
-
+@login_required
+@never_cache
 def dashboard(request):
     sellers_count = Seller.objects.filter(is_approved=True).count()
     buyer_count = Buyer.objects.count()
@@ -21,10 +25,14 @@ def dashboard(request):
     }
     return render(request, 'admin_panel/admin_dashboard.html', context)
 
+@login_required
+@never_cache
 def seller_requests(request):
     sellers = Seller.objects.filter(is_approved=False, is_rejected=False)
     return render(request, 'admin_panel/sellers_requests.html', {'sellers': sellers})
 
+@login_required
+@never_cache
 def seller_request_detail(request, seller_id):
     seller = get_object_or_404(Seller, id=seller_id)
 
@@ -42,7 +50,8 @@ def seller_request_detail(request, seller_id):
 
     return render(request, 'admin_panel/seller_request_viewmore.html', {'seller': seller})
 
-
+@login_required
+@never_cache
 def seller_reject_reason(request, seller_id):
     seller = get_object_or_404(Seller, id=seller_id)
     if request.method == 'POST':
@@ -53,14 +62,20 @@ def seller_reject_reason(request, seller_id):
         return redirect('seller_requests') 
     return render(request, 'admin_panel/seller_reject_reason.html', {'seller': seller})
 
+@login_required
+@never_cache
 def seller_view(request, seller_id):
     seller = get_object_or_404(Seller, id=seller_id)
     return render(request, 'admin_panel/seller_view.html', {'seller': seller})
 
+@login_required
+@never_cache
 def sellers_list(request):
     sellers = Seller.objects.filter(is_approved=True)
     return render(request, 'admin_panel/sellers.html', {'sellers': sellers})
 
+@login_required
+@never_cache
 def toggle_seller_status(request, seller_id):
     seller = get_object_or_404(Seller, id=seller_id)
     user = seller.user
@@ -68,10 +83,14 @@ def toggle_seller_status(request, seller_id):
     user.save()
     return redirect('sellers-list')
 
+@login_required
+@never_cache
 def buyers_list(request):
     buyers = Buyer.objects.all()
     return render(request, 'admin_panel/buyers.html', {'buyers': buyers})
 
+@login_required
+@never_cache
 def add_category(request):
     categories = Category.objects.all()
     if request.method == 'POST':
@@ -81,15 +100,19 @@ def add_category(request):
         return redirect('add_category')
     return render(request, 'admin_panel/add_category.html', {'categories': categories})
 
-
+@login_required
+@never_cache
 def approve_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     product.status = 'approved'
     product.rejection_reason = None
     product.save()
     messages.success(request, 'Product approved successfully.')
-    return redirect('manage_products')
+    return redirect(f"{reverse('manage_products')}?status=pending")
 
+
+@login_required
+@never_cache
 def reject_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
@@ -101,6 +124,8 @@ def reject_product(request, product_id):
         return redirect('manage_products')
     return render(request, 'admin_panel/reject_reason.html', {'product': product})
 
+@login_required
+@never_cache
 def manage_products(request):
     status = request.GET.get('status')
     if status:
@@ -109,6 +134,8 @@ def manage_products(request):
         products = Product.objects.filter(seller=request.user)
     return render(request, 'admin_panel/manage_products.html', {'products': products})
 
+@login_required
+@never_cache
 def low_stock_products(request):
     status=request.GET.get('status')
     if status=='low_stock':
@@ -118,3 +145,25 @@ def low_stock_products(request):
     else:
         low_stock_products = Product.objects.filter(stock__lt=10)
     return render(request, 'admin_panel/low_stock_products.html', {'low_stock_products': low_stock_products})
+
+def order_management(request):
+    status = request.GET.get('status')
+    if status:
+        orders = Order.objects.filter(status=status).prefetch_related('items__product')
+    else:
+        orders = Order.objects.filter(status='Pending').prefetch_related('items__product')
+    agents = DeliveryAgent.objects.all()
+    return render(request, 'admin_panel/order_management.html',  {'orders': orders, 'agents': agents})
+
+def ship_order(request, order_id):
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id)
+        agent_id = request.user.id
+        agent = DeliveryAgent.objects.get(id=agent_id)
+
+        order.status = 'Shipped'
+        order.assigned_to = agent
+        order.is_assigned = True
+        order.save()
+        messages.success(request, "Order shipped and agent assigned.")
+        return redirect('order_management')

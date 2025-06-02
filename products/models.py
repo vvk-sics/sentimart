@@ -81,18 +81,17 @@ class CartItem(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('placed', 'Order Placed'),      
-        ('pending', 'Pending Delivery'),  
-        ('transit', 'In Transit'),       
-        ('delivered', 'Delivered'),      
-        ('cancelled', 'Cancelled'),
-        ('rejected', 'Rejected'),   
+        ('Pending', 'Pending'),
+        ('Shipped', 'Shipped'),
+        ('About to Deliver', 'About to Deliver'),
+        ('Delivered', 'Delivered'),
+        ('Rejected', 'Rejected'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='placed')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     is_assigned = models.BooleanField(default=False)
     assigned_to = models.ForeignKey(DeliveryAgent, null=True, blank=True, on_delete=models.SET_NULL)
     issue_reason = models.TextField(blank=True, null=True)

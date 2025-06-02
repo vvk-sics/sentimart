@@ -17,6 +17,9 @@ urlpatterns = [
     path('admin/reject-product/<int:product_id>/', views.reject_product, name='reject_product'),
     path('low_stock_products/', views.low_stock_products, name='low_stock_products'),
 
+    path('order_management', views.order_management, name='order_management'),
+    path('admin/ship/<int:order_id>/', views.ship_order, name='ship_order'),
+
     
 
 
