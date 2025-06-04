@@ -61,38 +61,73 @@
         <!-- Notice the method, enctype and csrf token for file upload -->
         <form class="flex flex-col gap-4" method="post" enctype="multipart/form-data">
           {% csrf_token %}
+
+          {% comment %} Full Name {% endcomment %}
           <label class="text-xs" for="fullname">Full Name</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="fullname" name="fullname" placeholder="Enter your full name" type="text" />
+          <input id="fullname" name="fullname" type="text" placeholder="Enter your full name"
+                value="{{ form_data.fullname|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.fullname %}<p class="text-red-500 text-xs">{{ errors.fullname }}</p>{% endif %}
 
+          {% comment %} Email {% endcomment %}
           <label class="text-xs" for="email">Email Address</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="email" name="email" placeholder="Enter your mail id" type="email" />
+          <input id="email" name="email" type="email" placeholder="Enter your mail id"
+                value="{{ form_data.email|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.email %}<p class="text-red-500 text-xs">{{ errors.email }}</p>{% endif %}
 
+          {% comment %} Password {% endcomment %}
           <label class="text-xs" for="password">Password</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="password" name="password" placeholder="Enter your password" type="password" />
+          <input id="password" name="password" type="password" placeholder="Enter your password"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.password %}<p class="text-red-500 text-xs">{{ errors.password }}</p>{% endif %}
 
+          {% comment %} Phone {% endcomment %}
           <label class="text-xs" for="phone">Phone Number</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="phone" name="phone" placeholder="Enter your phone number" type="tel" pattern="[0-9]{10}"/>
+          <input id="phone" name="phone" type="tel" pattern="[0-9]{10}" placeholder="Enter your phone number"
+                value="{{ form_data.phone|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.phone %}<p class="text-red-500 text-xs">{{ errors.phone }}</p>{% endif %}
 
+          {% comment %} Business Name {% endcomment %}
           <label class="text-xs" for="displayname">Business Name</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="displayname" name="displayname" placeholder="Enter your business name" type="text" />
+          <input id="displayname" name="displayname" type="text" placeholder="Enter your business name"
+                value="{{ form_data.displayname|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.displayname %}<p class="text-red-500 text-xs">{{ errors.displayname }}</p>{% endif %}
 
+          {% comment %} Business Type {% endcomment %}
           <label class="text-xs" for="businesstype">Business Type</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="businesstype" name="businesstype" placeholder="Enter your business type" type="text" />
+          <input id="businesstype" name="businesstype" type="text" placeholder="Enter your business type"
+                value="{{ form_data.businesstype|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.businesstype %}<p class="text-red-500 text-xs">{{ errors.businesstype }}</p>{% endif %}
 
+          {% comment %} Business Address {% endcomment %}
           <label class="text-xs" for="businessaddress">Business Address</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="businessaddress" name="businessaddress" placeholder="Enter your business address" type="text" />
+          <input id="businessaddress" name="businessaddress" type="text" placeholder="Enter your business address"
+                value="{{ form_data.businessaddress|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.businessaddress %}<p class="text-red-500 text-xs">{{ errors.businessaddress }}</p>{% endif %}
 
+          {% comment %} Registration Number {% endcomment %}
           <label class="text-xs" for="registernumber">Registration Number</label>
-          <input class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs placeholder:text-[#a0b0b0] focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" id="registernumber" name="registernumber" placeholder="Enter your registration number" type="text" />
+          <input id="registernumber" name="registernumber" type="text" placeholder="Enter your registration number"
+                value="{{ form_data.registernumber|default:'' }}"
+                class="border border-[#5a9ea1] rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#5a9ea1]" />
+          {% if errors.registernumber %}<p class="text-red-500 text-xs">{{ errors.registernumber }}</p>{% endif %}
 
+          {% comment %} Validation Document {% endcomment %}
           <label class="text-xs" for="validationdoc">Validation Document</label>
-          <input class="border border-gray-300 rounded px-2 py-1" id="validationdoc" name="validationdoc" type="file" />
+          <input id="validationdoc" name="validationdoc" type="file"
+                class="border border-gray-300 rounded px-2 py-1" />
+          {% if errors.validationdoc %}<p class="text-red-500 text-xs">{{ errors.validationdoc }}</p>{% endif %}
 
-          <!-- Replace the anchor with a submit button -->
           <button type="submit" class="mt-4 bg-[#5a9ea1] text-white rounded-md py-2 px-4 text-sm hover:bg-[#4a7a7f] transition-colors">
             Sign up
           </button>
         </form>
+
 
         <p class="text-xs text-center mt-4">
           Already a User?

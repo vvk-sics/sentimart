@@ -22,6 +22,7 @@ import uuid
 # Create your views here.
 
 def buyer_register(request):
+    context = {}
     if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -29,13 +30,28 @@ def buyer_register(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
 
+        errors = {}
+
+        if not username:
+            errors['username'] = "Username is required."
+        if not email:
+            errors['email'] = "Email is required."
+        if not phone_number or not phone_number.isdigit() or len(phone_number) != 10:
+            errors['phone_number'] = "Enter a valid 10-digit phone number."
+        if not password or len(password) < 6:
+            errors['password'] = "Password must be at least 6 characters."
         if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return redirect('buyer-register')
-        
+            errors['confirm_password'] = "Passwords do not match."
+
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Email already registered.")
-            return redirect('buyer-register')
+            errors['username'] = "Username already taken."
+        if User.objects.filter(email=email).exists():
+            errors['email'] = "Email already registered."
+
+        if errors:
+            context['errors'] = errors
+            context['form_data'] = request.POST
+            return render(request, 'buyer/buyer_register.html', context)
         
         user = User.objects.create_user(username=username, email=email, password=password)
         user_type = 'buyer'

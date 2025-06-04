@@ -12,24 +12,51 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt  
 
 def seller_registration(request):
+    context = {}
     if request.method == "POST":
-    
         full_name = request.POST.get('fullname')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
-        password = request.POST.get('password') 
+        password = request.POST.get('password')
         business_name = request.POST.get('displayname')
         business_address = request.POST.get('businessaddress')
         business_type = request.POST.get('businesstype')
         registration_number = request.POST.get('registernumber')
         validation_doc = request.FILES.get('validationdoc')
 
-      
+        errors = {}
+
+        if not full_name:
+            errors['fullname'] = "Full name is required."
+        if not email:
+            errors['email'] = "Email is required."
+        elif User.objects.filter(email=email).exists():
+            errors['email'] = "Email already registered."
+        if not password or len(password) < 6:
+            errors['password'] = "Password must be at least 6 characters."
+        if not phone or not phone.isdigit() or len(phone) != 10:
+            errors['phone'] = "Enter a valid 10-digit phone number."
+        if not business_name:
+            errors['displayname'] = "Business name is required."
+        if not business_type:
+            errors['businesstype'] = "Business type is required."
+        if not business_address:
+            errors['businessaddress'] = "Business address is required."
+        if not registration_number:
+            errors['registernumber'] = "Registration number is required."
+        if not validation_doc:
+            errors['validationdoc'] = "Please upload a validation document."
+
+        if errors:
+            context['errors'] = errors
+            context['form_data'] = request.POST
+            return render(request, 'seller/seller_registration.html', context)
+
         user = User.objects.create_user(username=full_name, email=email, password=password)
         user.user_type = 'seller'
         user.save()
 
-        seller = Seller.objects.create(
+        Seller.objects.create(
             user=user,
             phone_number=phone,
             business_name=business_name,

@@ -22,12 +22,53 @@
         {% endif %}
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            <input type="text" name="username" placeholder="Name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <input type="email" name="email" placeholder="Email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <input type="text" name="phone_number" placeholder="Phone Number" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <input type="password" name="password" placeholder="Password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <input type="password" name="confirm_password" placeholder="Confirm Password" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <button type="submit" class="w-full bg-white text-[#4a8287] py-2 rounded-lg hover:bg-teal-700 transition-colors">Sign Up</button>
+
+            <div>
+                <input type="text" name="username" placeholder="Name"
+                    value="{{ form_data.username|default:'' }}"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if errors.username %}
+                    <p class="text-red-500 text-sm mt-1">{{ errors.username }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <input type="email" name="email" placeholder="Email"
+                    value="{{ form_data.email|default:'' }}"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if errors.email %}
+                    <p class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <input type="text" name="phone_number" placeholder="Phone Number"
+                    value="{{ form_data.phone_number|default:'' }}"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if errors.phone_number %}
+                    <p class="text-red-500 text-sm mt-1">{{ errors.phone_number }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <input type="password" name="password" placeholder="Password"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if errors.password %}
+                    <p class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <input type="password" name="confirm_password" placeholder="Confirm Password"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                {% if errors.confirm_password %}
+                    <p class="text-red-500 text-sm mt-1">{{ errors.confirm_password }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full bg-white text-[#4a8287] py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                Sign Up
+            </button>
         </form>
         <p class="text-white text-sm mt-4">
             Already registered? <a href="{% url 'login' %}" class="text-primary hover:underline">Sign in</a>
