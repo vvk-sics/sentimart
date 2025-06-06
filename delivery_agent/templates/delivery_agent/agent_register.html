@@ -86,7 +86,7 @@
                 <div class="relative p-8 md:p-12">
                     <h2 class="text-3xl font-bold text-white mb-8">Registration</h2>
                     
-                    <form method="post" name="delivery-agent-registration" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                    <form method="post" name="delivery-agent-registration" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6" enctype="multipart/form-data">
                       {% csrf_token %}
                         <div class="space-y-6">
                             <div>
@@ -199,7 +199,10 @@
                                     <div class="w-5 h-5 flex items-center justify-center">
                                         <i class="ri-upload-2-line"></i>
                                     </div>
-                                    <input type="file" accept="image/*,.pdf" name="drivinglicence">
+                                    <input type="file" name="drivinglicence" id="drivinglicence"
+                                    onchange="showFileName(this)"
+                                    class="border border-gray-300 rounded px-2 py-1 text-xs" required>
+                                    <p id="file-name" class="text-xs text-gray-600 mt-1"></p>
                                     {% if errors.drivinglicence %}
                                     <p class="text-red-500 text-sm mt-1">{{ errors.drivinglicence }}</p>
                                     {% endif %}
@@ -221,5 +224,18 @@
             </div>
         </main>
     </div>
+
+
+
+<script>
+  function showFileName(input) {
+    const fileNameDisplay = document.getElementById("file-name");
+    if (input.files.length > 0) {
+      fileNameDisplay.innerText = "Selected: " + input.files[0].name;
+    } else {
+      fileNameDisplay.innerText = "";
+    }
+  }
+</script>
 </body>
 </html>

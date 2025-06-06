@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 
 def delivery_agent_register(request):
     context = {}
+
     if request.method == "POST":
         full_name = request.POST.get('fullname')
         email = request.POST.get('email')
@@ -51,10 +52,10 @@ def delivery_agent_register(request):
             errors['licencenumber'] = "License number is required"
         if not licence_expiry_date:
             errors['licenceexpirydate'] = "Expiry date is required"
-        if not password or len(password) < 6:
-            errors['password'] = "Password must be at least 6 characters"
+        if not password or len(password) < 6 or not any(char.isupper() for char in password) or not any(char.isdigit() for char in password):
+            errors['password'] = "Password must be at least 6 characters, contain an uppercase letter and a number"
         if password != confirm_password:
-            errors['confirmPassword'] = "Passwords do not match"
+            errors['confirmpassword'] = "Passwords do not match"
         if not driving_licence:
             errors['drivinglicence'] = "Upload your license"
         if own_vehicle not in ['True', 'False']:
@@ -69,7 +70,7 @@ def delivery_agent_register(request):
         user.user_type = 'delivery_agent'
         user.save()
 
-        agent = DeliveryAgent.objects.create(
+        DeliveryAgent.objects.create(
             user=user,
             phone=phone,
             city=city,
@@ -81,9 +82,10 @@ def delivery_agent_register(request):
             own_vehicle=own_vehicle
         )
 
+        messages.success(request, "Registration successful.")
         return redirect('login')
 
-    return render(request, 'delivery_agent/agent_register.html')
+    return render(request, 'delivery_agent/agent_register.html', context)
 
 def delivery_agent_dashboard(request):
     return render(request, 'delivery_agent/agent_dashboard.html')
