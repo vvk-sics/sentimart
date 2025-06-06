@@ -7,12 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
 def delivery_agent_register(request):
+    context = {}
+
     if request.method == "POST":
-    
         full_name = request.POST.get('fullname')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
@@ -23,13 +26,51 @@ def delivery_agent_register(request):
         licence_expiry_date = request.POST.get('licenceexpirydate')
         driving_licence = request.FILES.get('drivinglicence')
         password = request.POST.get('password')
+        confirm_password = request.POST.get('confirmpassword')
         own_vehicle = request.POST.get('own_vehicle')
+
+        errors = {}
+
+        if not full_name:
+            errors['fullname'] = "Full name is required"
+        if not email:
+            errors['email'] = "Email is required"
+        else:
+            try:
+                validate_email(email)
+            except ValidationError:
+                errors['email'] = "Invalid email format"
+        if not phone or not phone.isdigit() or len(phone) != 10:
+            errors['phone'] = "Enter a valid 10-digit phone number"
+        if not city:
+            errors['city'] = "City is required"
+        if not location:
+            errors['location'] = "Location is required"
+        if not pincode or not pincode.isdigit() or len(pincode) != 6:
+            errors['pincode'] = "Enter a valid 6-digit pincode"
+        if not licence_number:
+            errors['licencenumber'] = "License number is required"
+        if not licence_expiry_date:
+            errors['licenceexpirydate'] = "Expiry date is required"
+        if not password or len(password) < 6 or not any(char.isupper() for char in password) or not any(char.isdigit() for char in password):
+            errors['password'] = "Password must be at least 6 characters, contain an uppercase letter and a number"
+        if password != confirm_password:
+            errors['confirmpassword'] = "Passwords do not match"
+        if not driving_licence:
+            errors['drivinglicence'] = "Upload your license"
+        if own_vehicle not in ['True', 'False']:
+            errors['own_vehicle'] = "Select an option"
+
+        if errors:
+            context['errors'] = errors
+            context['form_data'] = request.POST
+            return render(request, 'delivery_agent/agent_register.html', context)
 
         user = User.objects.create_user(username=full_name, email=email, password=password)
         user.user_type = 'delivery_agent'
         user.save()
 
-        agent = DeliveryAgent.objects.create(
+        DeliveryAgent.objects.create(
             user=user,
             phone=phone,
             city=city,
@@ -41,9 +82,10 @@ def delivery_agent_register(request):
             own_vehicle=own_vehicle
         )
 
+        messages.success(request, "Registration successful.")
         return redirect('login')
 
-    return render(request, 'delivery_agent/agent_register.html')
+    return render(request, 'delivery_agent/agent_register.html', context)
 
 def delivery_agent_dashboard(request):
     return render(request, 'delivery_agent/agent_dashboard.html')

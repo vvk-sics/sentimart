@@ -1,3 +1,7 @@
+{% extends 'seller_base.html' %}
+
+{% block content %}
+</aside>
 <h2 class="text-xl font-semibold mb-4">Add Variant for {{ product.name }}</h2>
 
 <form method="post">
@@ -26,3 +30,4 @@
     <button class="bg-teal-600 text-white p-2 rounded hover:bg-teal-700">Add Variant</button>
     <a href="{% url 'seller_dashboard' %}">Completed</a>
 </form>
+{% endblock %}
