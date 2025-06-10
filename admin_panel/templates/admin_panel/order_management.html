@@ -4,6 +4,11 @@
 </aside>
 <div class="container mx-auto p-4">
     <h1 class="text-center">Order Management</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:red">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
     <div class="flex space-x-4 my-6 justify-center items-center">
         <a href="{% url 'order_management' %}?status=Pending" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Pending Orders</a>
         <a href="{% url 'order_management' %}?status=Shipped" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Shipped Orders</a>
@@ -65,18 +70,22 @@
           {% if order.status == 'Pending' %}
           <div class="relative">
             <form action="{% url 'ship_order' order.id %}" method="POST">
-                {% csrf_token %}
-                <select
+              {% csrf_token %}
+              <select
+                name="agent"
                 id="agentSelect"
                 class="w-full appearance-none bg-gray-100 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-                >
+              >
                 <option value="" selected disabled>Assign delivery agent</option>
                 {% for agent in agents %}
-                <option value="{{ agent.id }}">{{ agent.user.username }}</option>
+                  <option value="{{ agent.id }}">{{ agent.user.username }}</option>
                 {% endfor %}
-                </select>
-                <button class="bg-[#4C888E] text-white py-2 px-6 rounded mt-4" type="submit">Ship Order</button>
-             </form>
+              </select>
+              <button class="bg-[#4C888E] text-white py-2 px-6 rounded mt-4" type="submit">
+                Ship Order
+              </button>
+            </form>
+
             <div
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
             >
