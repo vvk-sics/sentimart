@@ -19,7 +19,7 @@
             <div class="flex flex-wrap">
                 {% for attr in attribute_values %}
                     <label class="inline-block mr-2">
-                        <input type="checkbox" name="attribute_values" value="{{ attr.id }}">
+                        <input type="radio" name="attribute_values" value="{{ attr.id }}">
                         {{ attr }}
                     </label>
                 {% endfor %}
