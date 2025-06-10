@@ -1,34 +1,42 @@
 {% extends './buyer_base.html' %}
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Place Your Order</h2>
-
-<form method="post">
-    {% csrf_token %}
-    <div class="mb-4">
-        <label for="address" class="block font-medium">Delivery Address:</label>
-       
-           {{default_address.name}}<br>
-           {{default_address.phone_number}}<br>
-           {{default_address.street_address}}<br>
-           {{default_address.apartment}}<br>
-           {{default_address.city}}<br>
-           {{default_address.state}}<br>
-           {{default_address.zip_code}}<br>
-           <a href="{% url 'address_list' %}">Change Address</a>
-    
-    </div>
-
-    <h3 class="text-xl font-medium mb-2">Your Items:</h3>
-    <ul class="mb-4">
-        {% for item in cart_items %}
-        <li>
-            {{ item.product.name }} — Qty: {{ item.quantity }} × ₹{{ item.product.base_price }} - {{ item.product.discount }}
-        </li>
-        {% endfor %}
-    </ul>
-
-    <p class="font-bold mb-4">Total: ₹{{ total_price }}</p>
-
-    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Confirm Order</button>
-</form>
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold mb-4">Place Your Order</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="bg-white p-6 rounded shadow-md">
+            <h3 class="text-xl font-medium mb-2">Delivery Address:</h3>
+            <div class="mb-4 border-b">
+                <div class="flex items-start space-x-6">
+                    <!-- <img src="{{ default_address.image.url }}" class="w-12 h-12" alt="Profile Image"> -->
+                    <div>
+                        <p class="font-medium">{{ default_address.name }}</p>
+                        <p class="text-sm">{{ default_address.phone_number }}</p>
+                        <p class="text-sm">{{ default_address.street_address }}, {{ default_address.apartment }}, {{ default_address.city }}, {{ default_address.state }} {{ default_address.zip_code }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'address_list' %}" class="text-blue-500 underline">Change Address</a>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded shadow-md mt-4">
+            <h3 class="text-xl font-medium mb-2">Your Items:</h3>
+            <ul class="mb-4">
+                {% for item in cart_items %}
+                <li class="flex justify-between items-center border-b py-4">
+                    <div class="flex items-start space-x-6">
+                        <img src="{{ item.product.image.url }}" class="w-12 h-12" alt="Product Image">
+                        <div>
+                            <p class="font-medium">{{ item.product.name }}</p>
+                            <p class="text-sm">Qty: {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                    <p class="text-right">₹{{ item.price }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <p class="font-bold mb-4">Total: ₹{{ total_price }}</p>
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Confirm Order</button>
+    </form>
+</div>
 {% endblock %}
