@@ -119,6 +119,7 @@ def add_product(request):
         discount = request.POST.get('discount')
         image = request.FILES.get('image')
         stock = request.POST.get('stock')
+        sku = request.POST.get('sku')
 
         category = get_object_or_404(Category, id=category_id)
 
@@ -133,7 +134,8 @@ def add_product(request):
             base_price=base_price,
             discount=discount,
             image=image,
-            stock=stock
+            stock=stock,
+            sku=sku
         )
         return redirect('add_variants', product_id=product.id)
     
