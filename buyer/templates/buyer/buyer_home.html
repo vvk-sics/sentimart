@@ -92,41 +92,28 @@
         <!-- recommented products section -->
         {% if request.user.is_authenticated and personalized_products %}
         <h2>Recommended For You</h2>
-        <div class="row">
+        <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4" role="list"
+            aria-label="Recommended products">
             {% for product in personalized_products %}
-            <div class="col-md-3 mb-4">
-                <!-- Your product card here -->
-                <div class="card">
-                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">₹{{ product.final_price }}</p>
-                        <a href="" class="btn btn-primary">View</a>
-                    </div>
+            <li class="border border-gray-200 rounded-lg p-2 flex flex-col items-center text-center relative transition duration-300 hover:border-2 hover:border-[#008ECC] hover:shadow-md hover:-m-[1px]"
+                tabindex="0">
+                <div class="mb-2 w-full h-[210px] overflow-hidden flex items-center justify-center">
+                    <img src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                        class="w-auto h-[200px] object-contain scale-125" />
                 </div>
-            </div>
+                <div class="text-xs font-semibold mb-0.5">{{ product.name }}</div>
+                <div class="text-xs text-gray-500 line-through mb-0.5">₹{{product.base_price}}</div>
+                <div class="text-sm font-bold mb-1">₹{{ product.discount }}</div>
+                <div class="text-xs text-green-600">Save - ₹{{ product.saved_amount|floatformat:0 }}</div>
+                <div class="absolute top-0 right-0 bg-[#0095D9] text-white text-xs font-semibold px-3 py-2 rounded-bl-[20px] leading-tight text-center">
+                    {{ product.discount_percentage|floatformat:0 }}%<br>OFF
+                </div>
+            </li>
             {% endfor %}
-        </div>
+        </ul>
         {% endif %}
         
-        <h2>Popular Products</h2>
-        <div class="row">
-            {% for product in popular_products %}
-            <div class="col-md-3 mb-4">
-                <!-- Your product card here -->
-                <div class="card">
-                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">₹{{ product.final_price }}</p>
-                        <a href="" class="btn btn-primary">View</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-          
         <!-- Smartphones Section -->
         <section class="mt-10">
             <div class="flex justify-between items-center mb-2">

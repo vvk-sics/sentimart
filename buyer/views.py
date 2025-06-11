@@ -56,7 +56,7 @@ def buyer_register(request):
             return render(request, 'buyer/buyer_register.html', context)
         
         user = User.objects.create_user(username=username, email=email, password=password)
-        user_type = 'buyer'
+        user.user_type = 'buyer'
         user.save()
         buyer = Buyer.objects.create(user=user, phone_number=phone_number)
         buyer.save()
@@ -333,6 +333,7 @@ def remove_cart_item(request, item_id):
 def smart_phones(request):
     return render(request, 'buyer/smartphones.html')
 
+@login_required
 def category_products(request, slug):
     category = Category.objects.get(slug=slug)
     products = Product.objects.filter(category=category)
