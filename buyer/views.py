@@ -21,6 +21,7 @@ from django.template.loader import get_template
 import uuid
 from recommendations.models import UserProductInteraction
 from recommendations.utils import get_popular_products, get_personalized_recommendations
+from django.db.models import Avg
 # Create your views here.
 
 def buyer_register(request):
@@ -147,9 +148,15 @@ def product_detail(request, pk):
         for name, values in attributes_dict.items()
     ]
 
+    avg_rating = product.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+    rating_count = product.reviews.count()
+
+
     return render(request, "buyer/product_detail.html", {
         "product": product,
         "attributes": attributes_data,
+        'avg_rating': round(avg_rating, 1),
+        'rating_count': rating_count
     })
     
 
