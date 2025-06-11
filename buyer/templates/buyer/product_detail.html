@@ -84,7 +84,12 @@
                         </div>
                         <div>
                             <p class="font-medium text-gray-800">{{ review.user.get_full_name }}</p>
-                            <p class="text-yellow-500 text-sm">★★★★★</p>
+                            <p class="text-yellow-500 text-sm">
+                                {% for i in "12345" %}
+                                    <span class="{% if forloop.counter <= review.rating %}text-yellow-500{% else %}text-gray-300{% endif %}">★</span>
+                                {% endfor %}
+                                {{ review.rating|floatformat:"1" }}
+                            </p>
                         </div>
                     </div>
                     <p class="mt-2 text-gray-700">{{ review.comment }}</p>
