@@ -159,27 +159,31 @@
             setInterval(nextSlide, 4000);
           </script>
 
-        <h2>Popular Products</h2>
-        <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4" role="list"
-            aria-label="Popular products">
-            {% for product in popular_products %}
-            <li class="border border-gray-200 rounded-lg p-2 flex flex-col items-center text-center relative transition duration-300 hover:border-2 hover:border-[#008ECC] hover:shadow-md hover:-m-[1px]"
-                tabindex="0">
-                <div class="mb-2 w-full h-[210px] overflow-hidden flex items-center justify-center">
-                    <img src="{{ product.image.url }}"
-                        alt="{{ product.name }}"
-                        class="w-auto h-[200px] object-contain scale-125" />
-                </div>
-                <div class="text-xs font-semibold mb-0.5">{{ product.name }}</div>
-                <div class="text-xs text-gray-500 line-through mb-0.5">₹{{product.base_price}}</div>
-                <div class="text-sm font-bold mb-1">₹{{ product.discount }}</div>
-                <div class="text-xs text-green-600">Save - ₹{{ product.saved_amount|floatformat:0 }}</div>
-                <div class="absolute top-0 right-0 bg-[#0095D9] text-white text-xs font-semibold px-3 py-2 rounded-bl-[20px] leading-tight text-center">
-                    {{ product.discount_percentage|floatformat:0 }}%<br>OFF
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="my-10">
+            <h2 class="text-sm sm:text-base font-normal">Popular Products</h2>
+            <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4" role="list"
+                aria-label="Popular products">
+                {% for product in popular_products %}
+                <a href="{% url 'product-detail' product.id  %}">
+                    <li class="border border-gray-200 rounded-lg p-2 flex flex-col items-center text-center relative transition duration-300 hover:border-2 hover:border-[#008ECC] hover:shadow-md hover:-m-[1px]"
+                        tabindex="0">
+                        <div class="mb-2 w-full h-[210px] overflow-hidden flex items-center justify-center">
+                            <img src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                                class="w-auto h-[200px] object-contain scale-125" />
+                        </div>
+                        <div class="text-xs font-semibold mb-0.5">{{ product.name }}</div>
+                        <div class="text-xs text-gray-500 line-through mb-0.5">₹{{product.base_price}}</div>
+                        <div class="text-sm font-bold mb-1">₹{{ product.discount }}</div>
+                        <div class="text-xs text-green-600">Save - ₹{{ product.saved_amount|floatformat:0 }}</div>
+                        <div class="absolute top-0 right-0 bg-[#0095D9] text-white text-xs font-semibold px-3 py-2 rounded-bl-[20px] leading-tight text-center">
+                            {{ product.discount_percentage|floatformat:0 }}%<br>OFF
+                        </div>
+                    </li>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
           
         <!-- Smartphones Section -->
         <section class="mt-10">
