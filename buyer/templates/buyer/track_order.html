@@ -59,7 +59,7 @@
     </div>
 
     <!-- Cancel button -->
-    {% if order.status %}
+    {% if order.status != 'Delivered' %}
     <form method="post" class="mt-6">
         {% csrf_token %}
         <button type="submit" name="cancel" class="px-4 py-2 bg-red-600 text-white rounded">Cancel Order</button>
