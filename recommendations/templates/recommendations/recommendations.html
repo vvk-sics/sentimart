@@ -1,0 +1,38 @@
+
+<div class="container">
+    {% if request.user.is_authenticated and personalized_products %}
+    <h2>Recommended For You</h2>
+    <div class="row">
+        {% for product in personalized_products %}
+        <div class="col-md-3 mb-4">
+            <!-- Your product card here -->
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">₹{{ product.final_price }}</p>
+                    <a href="" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <h2>Popular Products</h2>
+    <div class="row">
+        {% for product in popular_products %}
+        <div class="col-md-3 mb-4">
+            <!-- Your product card here -->
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">₹{{ product.final_price }}</p>
+                    <a href="" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'admin_panel',
     'buyer',
     'delivery_agent',
+    'recommendations',
 ]
 
 MIDDLEWARE = [
