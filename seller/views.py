@@ -4,7 +4,7 @@ from accounts.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
-from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant
+from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant, OrderItem
 from categories.models import Category
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -211,3 +211,16 @@ def update_stock(request):
         return JsonResponse({'success': False, 'message': 'Product not found'})
     except ValueError:
         return JsonResponse({'success': False, 'message': 'Invalid stock value'})
+
+@login_required
+def seller_orders(request):
+    if request.user.user_type != 'seller':
+        return redirect('dashboard')
+
+    seller = request.user
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+
+    context = {
+        'order_items': order_items
+    }
+    return render(request, 'seller/seller_orders.html', context)
