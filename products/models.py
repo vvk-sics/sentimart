@@ -6,6 +6,10 @@ from buyer.models import Address
 # Create your models here.
 # products/models.py
 
+class ProductAttribute(models.Model):
+    name = models.CharField(max_length=100)
+    categories = models.ManyToManyField(Category, related_name='attributes')
+
 class Product(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -43,14 +47,8 @@ class Product(models.Model):
             return (self.discount / self.base_price) * 100
         return 0
     
-class ProductAttribute(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
 class ProductAttributeValue(models.Model):
-    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values' )
+    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values')
     value = models.CharField(max_length=100)
 
     def __str__(self):
@@ -59,11 +57,12 @@ class ProductAttributeValue(models.Model):
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
     attributes = models.ManyToManyField(ProductAttributeValue)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    stock = models.IntegerField()
 
     def __str__(self):
-        return f"{self.product.name} - {' - '.join([str(a) for a in self.attributes.all()])}"
+        attrs = ", ".join(str(val) for val in self.attributes.all())
+        return f"{self.product.name} Variant ({attrs})"
 
 class CartItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

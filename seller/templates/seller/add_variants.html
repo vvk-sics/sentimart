@@ -3,47 +3,41 @@
 {% block content %}
 </aside>
 <div class="bg-white rounded-lg p-6 w-full max-w-5xl shadow-md">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add Variant for {{ product.name }}</h2>
-    {% if messages %}
-        <ul class="mt-4 text-green-600">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
+    <h2 class="text-xl font-bold text-gray-700 mb-4">Add Variant for {{ product.name }}</h2>
+{% if messages %}
+    <ul class="mt-4 text-green-600">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <label class="block text-gray-700">Select Attribute Values</label>
-            <div class="flex flex-col gap-4">
-                {% for attr in attributes %}
-                    <div>
-                        <label class="block font-medium text-gray-600">{{ attr.name }}</label>
-                        {% for value in attr.values.all %}
-                            <label class="inline-block mr-3">
-                                <input type="radio" name="attribute_{{ attr.id }}" value="{{ value.id }}">
-                                {{ value }}
-                            </label>
-                        {% endfor %}
-                    </div>
+    {% for attribute in attribute_groups %}
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-1">{{ attribute.name }}</label>
+            <select name="attribute_values" class="border w-full p-2 rounded" required>
+                <option value="">-- Select {{ attribute.name }} --</option>
+                {% for value in attribute.values.all %}
+                    <option value="{{ value.id }}">{{ value.value }}</option>
                 {% endfor %}
-            </div>
+            </select>
         </div>
+    {% endfor %}
 
+    <div class="mb-4">
+        <label class="block text-gray-700">Price</label>
+        <input type="text" name="price" class="border p-2 w-full rounded" required>
+    </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700">Variant Price</label>
-            <input type="text" name="price" class="border border-gray-300 rounded w-full p-2">
-        </div>
+    <div class="mb-4">
+        <label class="block text-gray-700">Stock</label>
+        <input type="number" name="stock" class="border p-2 w-full rounded" required>
+    </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700">Variant Stock</label>
-            <input type="number" name="stock" class="border border-gray-300 rounded w-full p-2">
-        </div>
+    <button class="bg-green-600 text-white p-2 rounded hover:bg-green-700">Add Variant</button>
+</form>
 
-        <button class="bg-teal-600 text-white p-2 rounded hover:bg-teal-700">Add Variant</button>
-        <a href="{% url 'seller_dashboard' %}" class="text-teal-600 hover:text-teal-700">Completed</a>
-    </form>
 </div>
 {% endblock %}
