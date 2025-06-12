@@ -144,7 +144,9 @@ def add_product(request):
 
 def add_variants(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    allowed_attributes = product.category.attributes.all()
+    allowed_attributes = product.category.attributes.prefetch_related('values').all()
+    for i in allowed_attributes:
+        print(i.values)
 
     if request.method == 'POST':
         price = request.POST.get('price')
@@ -192,26 +194,20 @@ def add_variants(request, product_id):
         })
 
     variants = []
-    for variant in product.variants.all().prefetch_related('attributes'):
+    for variant in product.variants.all().prefetch_related('attributes__attribute'):
         variant_data = {
             'id': variant.id,
             'price': variant.price,
             'stock': variant.stock,
-            'attributes': {}
+            'attributes': {attr_val.attribute_id: attr_val.value for attr_val in variant.attributes.all()}
         }
-        for attr_val in variant.attributes.all():
-            variant_data['attributes'][attr_val.attribute_id] = {
-                'id': attr_val.id,
-                'value': attr_val.value,
-                'name': attr_val.attribute.name
-            }
         variants.append(variant_data)
-
+    
     return render(request, 'seller/add_variants.html', {
         'product': product,
         'attribute_groups': attribute_groups,
         'variants': variants,
-        'attributes': allowed_attributes  # Add this for the template
+        'attributes': allowed_attributes
     })
 
 def add_product_attribute(request):
