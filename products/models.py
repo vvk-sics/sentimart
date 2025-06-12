@@ -50,7 +50,7 @@ class ProductAttribute(models.Model):
         return self.name
 
 class ProductAttributeValue(models.Model):
-    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values' )
     value = models.CharField(max_length=100)
 
     def __str__(self):

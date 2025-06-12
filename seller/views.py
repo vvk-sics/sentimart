@@ -148,19 +148,35 @@ def add_variants(request, product_id):
     if request.method == 'POST':
         price = request.POST.get('price')
         stock = request.POST.get('stock')
-        selected_values = request.POST.getlist('attribute_values')
 
+        
+        selected_values = []
+        for attr in ProductAttribute.objects.all():
+            value_id = request.POST.get(f'attribute_{attr.id}')
+            if not value_id:
+                messages.error(request, f"Please select a value for {attr.name}")
+                return redirect('add_variants', product_id=product.id)
+            selected_values.append(int(value_id))
+
+        
+        existing_variants = ProductVariant.objects.filter(product=product)
+        for variant in existing_variants:
+            existing_ids = set(variant.attributes.values_list('id', flat=True))
+            if set(selected_values) == existing_ids:
+                messages.error(request, "This variant combination already exists.")
+                return redirect('add_variants', product_id=product.id)
+
+        
         variant = ProductVariant.objects.create(product=product, price=price, stock=stock)
         variant.attributes.set(selected_values)
-        variant.save()
-
         messages.success(request, "Variant added successfully.")
         return redirect('add_variants', product_id=product.id)
 
-    attribute_values = ProductAttributeValue.objects.all()
+    
+    attributes = ProductAttribute.objects.prefetch_related('values')
     return render(request, 'seller/add_variants.html', {
         'product': product,
-        'attribute_values': attribute_values
+        'attributes': attributes
     })
 
 def add_product_attribute(request):
