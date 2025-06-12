@@ -7,24 +7,32 @@ ENV PYTHONUNBUFFERED 1
 
 # Set working directory
 WORKDIR /app
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
     python3-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pip-tools first
-RUN pip install --upgrade pip && pip install pip-tools
+# Upgrade pip first (no need for pip-tools unless you're using it)
+RUN pip install --upgrade pip
 
 # Copy requirements.txt
 COPY requirements.txt .
 
-# Install dependencies from the compiled requirements.txt
+# Install Python dependencies
 RUN pip install -r requirements.txt
 
 # Copy Django project files
 COPY . .
 
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
 # Expose port 8000 for Django
