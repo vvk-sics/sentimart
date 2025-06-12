@@ -179,11 +179,20 @@ def add_variants(request, product_id):
 def add_product_attribute(request):
     if request.method == 'POST':
         name = request.POST.get('name')
+        category_ids = request.POST.getlist('categories')
+
         if name:
-            ProductAttribute.objects.create(name=name)
-            messages.success(request, 'Attribute created successfully!')
+            attribute = ProductAttribute.objects.create(name=name)
+            attribute.categories.set(category_ids)
+            attribute.save()
+
+            messages.success(request, 'Attribute created and assigned to categories successfully!')
             return redirect('add_product_attribute')
-    return render(request, 'seller/add_attribute.html')
+
+    categories = Category.objects.all()
+    return render(request, 'seller/add_attribute.html', {
+        'categories': categories
+    })
 
 
 def add_product_attribute_value(request):

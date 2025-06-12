@@ -13,10 +13,20 @@
   {% endif %}
   <form method="post" class="flex flex-col w-full">
     {% csrf_token %}
+
     <label class="block mb-2" for="name">Attribute Name:</label>
     <input type="text" id="name" name="name" placeholder="Enter attribute name" class="border p-2 rounded w-full mb-4">
+
+    <label class="block mb-2" for="categories">Assign to Categories:(Press Ctrl to select multiple)</label>
+    <select id="categories" name="categories" multiple class="border p-2 rounded w-full mb-4 h-32">
+      {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+      {% endfor %}
+    </select>
+
     <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Add Attribute</button>
   </form>
+
   <!-- <a href="{% url 'seller_dashboard' %}" class="mt-4 text-blue-600 hover:text-blue-800">Go back</a> -->
 </div>
 {% endblock %}
