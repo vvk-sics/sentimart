@@ -144,36 +144,74 @@ def add_product(request):
 
 def add_variants(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-
-    allowed_attributes = ProductAttribute.objects.filter(categories=product.category).prefetch_related('values')
+    allowed_attributes = product.category.attributes.all()
 
     if request.method == 'POST':
         price = request.POST.get('price')
         stock = request.POST.get('stock')
         selected_values = request.POST.getlist('attribute_values')
 
-        selected_attrs = ProductAttributeValue.objects.filter(id__in=selected_values).values_list('attribute_id', flat=True)
-        if set(selected_attrs) != set(allowed_attributes.values_list('id', flat=True)):
-            messages.error(request, "Please select one value for each attribute.")
+        # Validate all required attributes are selected
+        selected_attrs = ProductAttributeValue.objects.filter(
+            id__in=selected_values
+        ).values_list('attribute_id', flat=True)
+        
+        required_attrs = set(allowed_attributes.values_list('id', flat=True))
+        selected_attrs_set = set(selected_attrs)
+        
+        if len(selected_values) != len(required_attrs) or selected_attrs_set != required_attrs:
+            messages.error(request, "Please select exactly one value for each required attribute.")
             return redirect('add_variants', product_id=product.id)
 
- 
-        existing_variant = ProductVariant.objects.filter(
-            product=product, attributes__in=selected_values
-        ).distinct()
-        if existing_variant.exists():
-            messages.error(request, "This variant already exists.")
-            return redirect('add_variants', product_id=product.id)
+        # Check for existing variant with exactly these attributes
+        existing_variants = ProductVariant.objects.filter(product=product).prefetch_related('attributes')
+        for variant in existing_variants:
+            variant_attrs = {attr.id for attr in variant.attributes.all()}
+            selected_attrs = {int(val) for val in selected_values}
+            if variant_attrs == selected_attrs:
+                messages.error(request, "A variant with these exact attributes already exists.")
+                return redirect('add_variants', product_id=product.id)
 
-   
-        variant = ProductVariant.objects.create(product=product, price=price, stock=stock)
+        # Create new variant
+        variant = ProductVariant.objects.create(
+            product=product, 
+            price=price, 
+            stock=stock
+        )
         variant.attributes.set(selected_values)
-        messages.success(request, "Variant added successfully.")
+        messages.success(request, "Variant added successfully!")
         return redirect('add_variants', product_id=product.id)
+
+    # Prepare data for template
+    attribute_groups = []
+    for attr in allowed_attributes:
+        attribute_groups.append({
+            'id': attr.id,
+            'name': attr.name,
+            'values': attr.values.all()
+        })
+
+    variants = []
+    for variant in product.variants.all().prefetch_related('attributes'):
+        variant_data = {
+            'id': variant.id,
+            'price': variant.price,
+            'stock': variant.stock,
+            'attributes': {}
+        }
+        for attr_val in variant.attributes.all():
+            variant_data['attributes'][attr_val.attribute_id] = {
+                'id': attr_val.id,
+                'value': attr_val.value,
+                'name': attr_val.attribute.name
+            }
+        variants.append(variant_data)
 
     return render(request, 'seller/add_variants.html', {
         'product': product,
-        'attribute_groups': allowed_attributes,
+        'attribute_groups': attribute_groups,
+        'variants': variants,
+        'attributes': allowed_attributes  # Add this for the template
     })
 
 def add_product_attribute(request):
