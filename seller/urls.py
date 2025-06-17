@@ -16,5 +16,8 @@ urlpatterns = [
     path('add-attribute-value/', views.add_product_attribute_value, name='add_product_attribute_value'),
     path('seller_orders/', views.seller_orders, name='seller_orders'),
 
+    path('reset-password/', views.reset_password, name='reset_password'),
+    path('forgot-password/', views.forgot_password, name='forgot-password'),
+
 
 ]
