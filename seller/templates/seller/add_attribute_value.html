@@ -2,27 +2,28 @@
 
 {% block content %}
 </aside>
-<form method="post">
-  {% csrf_token %}
-  <label class="block mb-2">Select Attribute:</label>
-  <select name="attribute" class="border p-2 rounded w-full mb-4">
-    {% for attr in attributes %}
-      <option value="{{ attr.id }}">{{ attr.name }}</option>
-    {% endfor %}
-  </select>
+<div class="flex flex-col w-full items-center bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add Attribute Value</h2>
+  {% if messages %}
+    <ul class="mt-4 text-green-600">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post" class="flex flex-col w-full">
+    {% csrf_token %}
+    <label class="block mb-2 text-gray-700">Select Attribute:</label>
+    <select name="attribute" class="border border-gray-300 p-2 rounded w-full mb-4">
+      {% for attr in attributes %}
+        <option value="{{ attr.id }}">{{ attr.name }}</option>
+      {% endfor %}
+    </select>
 
-  <label class="block mb-2">Value (e.g., Red, Medium):</label>
-  <input type="text" name="value" placeholder="Enter value" class="border p-2 rounded w-full mb-4">
+    <label class="block mb-2 text-gray-700">Value (e.g., Red, Medium):</label>
+    <input type="text" name="value" placeholder="Enter value" class="border border-gray-300 p-2 rounded w-full mb-4">
 
-  <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Add Value</button>
-    <!-- <a href="{% url 'seller_dashboard' %}">go back</a> -->
-</form>
-
-{% if messages %}
-  <ul class="mt-4 text-green-600">
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+    <button type="submit" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">Add Value</button>
+  </form>
+</div>
 {% endblock %}

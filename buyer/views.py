@@ -19,6 +19,9 @@ from .forms import ReviewForm
 from django.urls import reverse
 from django.template.loader import get_template
 import uuid
+from recommendations.models import UserProductInteraction
+from recommendations.utils import get_popular_products, get_personalized_recommendations
+from django.db.models import Avg
 # Create your views here.
 
 def buyer_register(request):
@@ -54,7 +57,7 @@ def buyer_register(request):
             return render(request, 'buyer/buyer_register.html', context)
         
         user = User.objects.create_user(username=username, email=email, password=password)
-        user_type = 'buyer'
+        user.user_type = 'buyer'
         user.save()
         buyer = Buyer.objects.create(user=user, phone_number=phone_number)
         buyer.save()
@@ -63,62 +66,76 @@ def buyer_register(request):
     
     return render(request, 'buyer/buyer_register.html')
 
-def get_user_recommendations(user):
-    cart_cats = CartItem.objects.filter(user=user).values_list('product__category', flat=True)
-    order_cats = OrderItem.objects.filter(order__user=user).values_list('product__category', flat=True)
-    categories = list(set(cart_cats) | set(order_cats))
+# def get_user_recommendations(user):
+#     cart_cats = CartItem.objects.filter(user=user).values_list('product__category', flat=True)
+#     order_cats = OrderItem.objects.filter(order__user=user).values_list('product__category', flat=True)
+#     categories = list(set(cart_cats) | set(order_cats))
 
-    interacted_product_ids = set(
-        CartItem.objects.filter(user=user).values_list('product__id', flat=True)
-    ) | set(
-        OrderItem.objects.filter(order__user=user).values_list('product__id', flat=True)
-    )
+#     interacted_product_ids = set(
+#         CartItem.objects.filter(user=user).values_list('product__id', flat=True)
+#     ) | set(
+#         OrderItem.objects.filter(order__user=user).values_list('product__id', flat=True)
+#     )
 
-    if categories:
-        recommendations = Product.objects.filter(
-            category__in=categories
-        ).exclude(id__in=interacted_product_ids).distinct()[:5]
-    else:
-        # fallback to latest products
-        recommendations = Product.objects.exclude(id__in=interacted_product_ids).order_by('-id')[:5]
+#     if categories:
+#         recommendations = Product.objects.filter(
+#             category__in=categories
+#         ).exclude(id__in=interacted_product_ids).distinct()[:5]
+#     else:
+#         # fallback to latest products
+#         recommendations = Product.objects.exclude(id__in=interacted_product_ids).order_by('-id')[:5]
 
-    return recommendations
+#     return recommendations
 
 
 @login_required
 @never_cache
 def buyer_home(request):
-    smartphones = Product.objects.filter(category__name='Smart Phone', status='approved')
-    smart_wantchs = Product.objects.filter(category__name='Smart Watches', status='approved')
+    smart_phones = Product.objects.filter(category__name='Smart Phones', status='approved')
+    smart_watches = Product.objects.filter(category__name='Smart Watches', status='approved')
     categories = Category.objects.all()
     query = request.GET.get('q', '')
     search_results = Product.objects.filter(
         Q(name__icontains=query) |
         Q(description__icontains=query) |
         Q(brand_name__icontains=query) |
-        Q(model_number__icontains=query)
+        Q(model_number__icontains=query),
+        status='approved'  # Only show approved products in search
     )
 
-
-    recommendations = []
-    if request.user.is_authenticated:
-        recommendations = get_user_recommendations(request.user)
+    # Get popular products
+    popular_products = get_popular_products(limit=8)
     
-    return render(request, 'buyer/buyer_home.html', {
-        'smartphones': smartphones,
+    # Get personalized recommendations if user is authenticated
+    personalized_products = []
+    if request.user.is_authenticated:
+        personalized_products = get_personalized_recommendations(request.user.id, limit=8)
+    
+    context = {
+        'smart_phones': smart_phones,
         'categories': categories,
         'query': query,
         'search_results': search_results,
-        'recommendations': recommendations,
-        'smart_wantchs': smart_wantchs
-        
-        })
+        'smart_watches': smart_watches,  
+        'popular_products': popular_products,
+        'personalized_products': personalized_products,
+    }
+    
+    return render(request, 'buyer/buyer_home.html', context)
         
 from collections import defaultdict
 @login_required
 @never_cache
 def product_detail(request, pk):
     product = Product.objects.get(pk=pk)
+    # Track view if user is authenticated
+    if request.user.is_authenticated:
+        interaction, created = UserProductInteraction.objects.get_or_create(
+            user=request.user,
+            product=product
+        )
+        interaction.view_count += 1
+        interaction.save()
     variants = product.variants.prefetch_related('attributes__attribute').all()
     attributes_dict = defaultdict(set)
     for variant in variants:
@@ -131,14 +148,18 @@ def product_detail(request, pk):
         for name, values in attributes_dict.items()
     ]
 
+    avg_rating = product.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+    rating_count = product.reviews.count()
+
+
     return render(request, "buyer/product_detail.html", {
         "product": product,
         "attributes": attributes_data,
+        'avg_rating': round(avg_rating, 1),
+        'rating_count': rating_count
     })
     
-from django.db.models import Q
-from django.db import models
-from django.db.models import Count
+
 @login_required
 @never_cache
 def add_to_cart(request, product_id):
@@ -319,6 +340,7 @@ def remove_cart_item(request, item_id):
 def smart_phones(request):
     return render(request, 'buyer/smartphones.html')
 
+@login_required
 def category_products(request, slug):
     category = Category.objects.get(slug=slug)
     products = Product.objects.filter(category=category)

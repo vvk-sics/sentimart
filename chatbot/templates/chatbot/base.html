@@ -1,0 +1,131 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sentimart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link href="/your-path-to-fontawesome/css/brands.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-900 w-[100vw] h-[100vh] overflow-x-hidden">
+    <div style="width: 100vw;height: 50px;background-color: #4C888E;"></div>
+    <header class="flex items-center justify-between px-6 sm:px-6 md:px-10 py-4 border-b border-gray-200">
+        <div class="p-4 ml-6">
+            <button 
+              class="flex flex-col justify-center items-start w-10 h-10 space-y-1.5 px-2 py-2" 
+              aria-label="Toggle navigation"
+              style="background-color: #F3F9FB; border-radius: 15%;">
+              
+              <!-- Line 1 -->
+              <span class="block w-6 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+              <!-- Line 2 -->
+              <span class="block w-5 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+              <!-- Line 3 -->
+              <span class="block w-4 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+            </button>
+          </div>
+          
+            <!-- Sentimart Logo and Brand Name -->
+            <a href="{% url 'buyer-home' %}" class="hover:no-underline">
+            <div class="flex items-center space-x-2">
+                <img src="{% static 'images/logo.png' %}"
+                    alt="Sentimart logo with wave design in teal and text Sentimart"
+                    class="w-[60px] h-[40px] object-contain" />
+                <span class="font-semibold text-teal-700 text-lg select-none no-underline">Sentimart</span>
+            </div>
+            </a>
+        
+        
+        <form
+        method="get"
+        action="{% url 'buyer-home' %}"  
+        class="hidden sm:flex items-center border border-gray-300 rounded-full px-3 py-1 w-[450px] md:w-[450px] md:h-[50px] focus-within:ring-2 focus-within:ring-teal-500"
+        role="search" aria-label="Search for products">
+
+        <!-- Search Icon -->
+        <svg class="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+        </svg>
+
+        <!-- Search Input -->
+        <input type="search"
+            name="q"
+            placeholder="Search for products"
+            class="flex-grow text-sm text-gray-600 placeholder-gray-400 outline-none bg-transparent"
+            aria-label="Search for products" />
+
+        <!-- AI Button -->
+        <button type="submit" aria-label="Search"
+            class="text-teal-600 text-xs font-semibold rounded-full border border-teal-300 w-6 h-6 flex items-center justify-center ml-2">
+            AI
+        </button>
+        </form>
+
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-semibold text-teal-700"> 
+            <a href="{% url 'buyer-home' %}" class="hover:underline">Home</a> 
+            <a href="#" class="hover:underline">Profile</a> 
+            <a href="{% url 'address_list' %}" class="hover:underline">Delivery Address</a> 
+            <a href="{% url 'orders' %}" class="hover:underline">Orders</a> 
+            <a href="{% url 'cart' %}"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 25 25" fill="none">
+                <path d="M19.9974 19.7503C18.6561 19.7503 17.5807 20.8257 17.5807 22.167C17.5807 22.8079 17.8353 23.4226 18.2886 23.8758C18.7418 24.329 19.3565 24.5837 19.9974 24.5837C20.6383 24.5837 21.253 24.329 21.7062 23.8758C22.1594 23.4226 22.4141 22.8079 22.4141 22.167C22.4141 21.5261 22.1594 20.9114 21.7062 20.4582C21.253 20.0049 20.6383 19.7503 19.9974 19.7503ZM0.664062 0.416992V2.83366H3.08073L7.43073 12.0049L5.7874 14.9653C5.60615 15.3037 5.4974 15.7024 5.4974 16.1253C5.4974 16.7663 5.75201 17.381 6.20522 17.8342C6.65843 18.2874 7.27312 18.542 7.91406 18.542H22.4141V16.1253H8.42156C8.34144 16.1253 8.26461 16.0935 8.20796 16.0368C8.15131 15.9802 8.11948 15.9034 8.11948 15.8232C8.11948 15.7628 8.13156 15.7145 8.15573 15.6782L9.24323 13.7087H18.2453C19.1516 13.7087 19.9491 13.2012 20.3599 12.4641L24.6857 4.64616C24.7703 4.45283 24.8307 4.24741 24.8307 4.04199C24.8307 3.72152 24.7034 3.41418 24.4768 3.18757C24.2502 2.96097 23.9429 2.83366 23.6224 2.83366H5.75115L4.61531 0.416992M7.91406 19.7503C6.57281 19.7503 5.4974 20.8257 5.4974 22.167C5.4974 22.8079 5.75201 23.4226 6.20522 23.8758C6.65843 24.329 7.27312 24.5837 7.91406 24.5837C8.555 24.5837 9.16969 24.329 9.6229 23.8758C10.0761 23.4226 10.3307 22.8079 10.3307 22.167C10.3307 21.5261 10.0761 20.9114 9.6229 20.4582C9.16969 20.0049 8.555 19.7503 7.91406 19.7503Z" fill="#146F78"/>
+                </svg></a>
+            <a href="{% url 'chat_home' %}">Chat Bot</a>
+            <a href="{% url 'logout' %}" class="hover:underline">Logout</a> 
+        </nav>
+    </header>
+
+
+    {% block content %}{% endblock %}
+
+
+    <footer class="bg-teal-600 text-white px-6 sm:px-10 py-10">
+        <div class="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div>
+                <h2 class="font-bold text-xl mb-2 select-none">Sentimart</h2>
+                <p class="mb-4">Contact Us</p>
+                <div class="flex items-center space-x-3 text-xs"><i class="fa-brands fa-whatsapp"></i>
+                    <div>
+                        <p>Whats App</p>
+                        <p>98765432100</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 text-xs"> <i class="fas fa-phone-alt"></i>
+                    <div>
+                        <p>Call Us</p>
+                        <p>9876543219</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-semibold underline underline-offset-4 mb-2">Most Popular Categories</h3>
+                <ul class="text-xs space-y-1 list-disc list-inside">
+                    <li>mobiles</li>
+                    <li>smart watch</li>
+                    <li>Electronics</li>
+                    <li>Home decors</li>
+                    <li>Furniture</li>
+                    <li>cosmetics</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-semibold underline underline-offset-4 mb-2">Customer Services</h3>
+                <ul class="text-xs space-y-1 list-disc list-inside">
+                    <li>About Us</li>
+                    <li>Contact Us</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-teal-400 mt-10" />
+    </footer>
+</body>
+
+</html>

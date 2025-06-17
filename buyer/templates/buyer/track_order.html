@@ -39,18 +39,18 @@
                 </div>
                 <span class="text-sm">Placed</span>
             </div>
-            <div class="flex-1 h-1 bg-green-300 mx-2"></div>
+            <div class="flex-1 h-1 {% if order.status in 'Shipped,Delivered' %}bg-green-300{% else %}bg-gray-300{% endif %} mx-2"></div>
 
             <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full bg-white border-2 {% if order.status in 'in_transit delivered' %}border-green-500{% else %}border-gray-400{% endif %} flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-white border-2 {% if order.status in 'Shipped,Delivered' %}border-green-500{% else %}border-gray-400{% endif %} flex items-center justify-center">
                     🚚
                 </div>
                 <span class="text-sm">In Transit</span>
             </div>
-            <div class="flex-1 h-1 bg-green-300 mx-2"></div>
+            <div class="flex-1 h-1 {% if order.status == 'Delivered' %}bg-green-300{% else %}bg-gray-300{% endif %} mx-2"></div>
 
             <div class="flex items-center space-x-2">
-                <div class="w-10 h-10 rounded-full bg-white border-2 {% if order.status == 'delivered' %}border-green-500{% else %}border-gray-400{% endif %} flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-white border-2 {% if order.status == 'Delivered' %}border-green-500{% else %}border-gray-400{% endif %} flex items-center justify-center">
                     ✅
                 </div>
                 <span class="text-sm">Delivered</span>
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Cancel button -->
-    {% if order.status %}
+    {% if order.status != 'Delivered' %}
     <form method="post" class="mt-6">
         {% csrf_token %}
         <button type="submit" name="cancel" class="px-4 py-2 bg-red-600 text-white rounded">Cancel Order</button>

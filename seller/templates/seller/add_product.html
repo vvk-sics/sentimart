@@ -26,8 +26,8 @@
                     <div class="mb-4">
                         <label class="block text-gray-700">Upload Image</label>
                         <div class="border-dashed border-2 border-gray-300 p-10 text-center cursor-pointer relative">
-                            <input type="file" name="image" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
-                            <span class="text-gray-500">Drag and drop or click to upload</span>
+                            <input type="file" name="image" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" id="imageInput">
+                            <span class="text-gray-500" id="imageText">Drag and drop or click to upload</span>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -74,10 +74,20 @@
                         <label class="block text-gray-700">Stock</label>
                         <input type="number" name="stock" placeholder="Enter stock" class="border border-gray-300 rounded w-full p-2">
                     </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700">SKU</label>
+                        <input type="text" name="sku" placeholder="Enter sku" class="border border-gray-300 rounded w-full p-2">
+                    </div>
                     <button class="bg-teal-600 text-white rounded p-2 w-full hover:bg-teal-700">ADD</button>
                 </div>
             </div>
         </form>
     </div>
+
+ <script>
+    document.getElementById('imageInput').addEventListener('change', (e) => {
+        document.getElementById('imageText').textContent = e.target.files[0].name;
+    })
+</script>
 </body>
 </html>

@@ -157,13 +157,23 @@ def order_management(request):
 
 def ship_order(request, order_id):
     if request.method == 'POST':
+        
+        agent_id = request.POST.get('agent')
+
+        if not agent_id:
+            messages.error(request, "Please select a delivery agent.")
+            return redirect('order_management')
+        try:
+            agent = DeliveryAgent.objects.get(id=agent_id)
+        except DeliveryAgent.DoesNotExist:
+            messages.error(request, "Selected delivery agent does not exist.")
+            return redirect('order_management')
+        
         order = get_object_or_404(Order, id=order_id)
-        agent_id = request.user.id
-        agent = DeliveryAgent.objects.get(id=agent_id)
 
         order.status = 'Shipped'
         order.assigned_to = agent
         order.is_assigned = True
         order.save()
         messages.success(request, "Order shipped and agent assigned.")
-        return redirect('order_management')
+    return redirect('order_management')

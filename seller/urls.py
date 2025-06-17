@@ -14,6 +14,10 @@ urlpatterns = [
     path('add-variants/<int:product_id>/', views.add_variants, name='add_variants'),
     path('add-attribute/', views.add_product_attribute, name='add_product_attribute'),
     path('add-attribute-value/', views.add_product_attribute_value, name='add_product_attribute_value'),
+    path('seller_orders/', views.seller_orders, name='seller_orders'),
+
+    path('reset-password/', views.reset_password, name='reset_password'),
+    path('forgot-password/', views.forgot_password, name='forgot-password'),
 
 
 ]

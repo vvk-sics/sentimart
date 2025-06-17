@@ -23,8 +23,15 @@
             <h1 class="text-3xl font-bold text-gray-800">{{ product.name }}</h1>
 
             <div class="flex items-center gap-2">
-                <span class="text-yellow-500 text-xl">★★★★★</span>
-                <span class="text-gray-500 text-sm">(645 reviews)</span>
+                <div class="flex items-center gap-2">
+                <p class="text-yellow-500 text-lg">
+                    {% for i in "12345" %}
+                        <span class="{% if forloop.counter <= avg_rating|floatformat:0 %}text-yellow-500{% elif forloop.counter0 < avg_rating < forloop.counter %}text-yellow-400{% else %}text-gray-300{% endif %}">★</span>
+                    {% endfor %}
+                </p>
+                <p class="text-gray-700 text-sm">({{ avg_rating }} out of 5)</p>
+                </div>
+                <span class="text-gray-500 text-sm">({{rating_count}} reviews)</span>
                 <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded">New Arrival</span>
             </div>
 
@@ -73,7 +80,14 @@
     <!-- Reviews Section -->
     <section class="mt-12">
         <h2 class="text-xl font-bold text-gray-800 mb-2">Customer Reviews</h2>
-        <p class="text-yellow-500 text-lg">★ 4 out of 5</p>
+        <div class="flex items-center gap-2">
+        <p class="text-yellow-500 text-lg">
+            {% for i in "12345" %}
+                <span class="{% if forloop.counter <= avg_rating|floatformat:0 %}text-yellow-500{% elif forloop.counter0 < avg_rating < forloop.counter %}text-yellow-400{% else %}text-gray-300{% endif %}">★</span>
+            {% endfor %}
+        </p>
+        <p class="text-gray-700 text-sm">({{ avg_rating }} out of 5)</p>
+        </div>
 
         <div class="space-y-4 mt-4">
             {% for review in product.reviews.all %}
@@ -84,7 +98,12 @@
                         </div>
                         <div>
                             <p class="font-medium text-gray-800">{{ review.user.get_full_name }}</p>
-                            <p class="text-yellow-500 text-sm">★★★★★</p>
+                            <p class="text-yellow-500 text-sm">
+                                {% for i in "12345" %}
+                                    <span class="{% if forloop.counter <= review.rating %}text-yellow-500{% else %}text-gray-300{% endif %}">★</span>
+                                {% endfor %}
+                                {{ review.rating|floatformat:"1" }}
+                            </p>
                         </div>
                     </div>
                     <p class="mt-2 text-gray-700">{{ review.comment }}</p>

@@ -4,7 +4,7 @@ from accounts.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
-from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant
+from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant, OrderItem
 from categories.models import Category
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -71,6 +71,38 @@ def seller_registration(request):
 
     return render(request, 'seller/seller_registration.html')
 
+def forgot_password(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            request.session['reset_email'] = email  
+            return redirect('reset_password')
+        except User.DoesNotExist:
+            messages.error(request, "Email does not exist.")
+    
+    return render(request, 'seller/forgot-password.html')
+
+
+def reset_password(request):
+    if 'reset_email' not in request.session:
+        return redirect('forgot_password')  
+    if request.method == "POST":
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm-password')
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+        else:
+            user = User.objects.get(email=request.session['reset_email'])
+            user.set_password(password)
+            user.save()
+            del request.session['reset_email'] 
+            messages.success(request, "Password reset successfully. You can now log in.")
+            return redirect('login')
+
+    return render(request, 'seller/reset_password.html')
+
 @login_required
 @never_cache
 def seller_dashboard(request):
@@ -119,6 +151,7 @@ def add_product(request):
         discount = request.POST.get('discount')
         image = request.FILES.get('image')
         stock = request.POST.get('stock')
+        sku = request.POST.get('sku')
 
         category = get_object_or_404(Category, id=category_id)
 
@@ -133,7 +166,8 @@ def add_product(request):
             base_price=base_price,
             discount=discount,
             image=image,
-            stock=stock
+            stock=stock,
+            sku=sku
         )
         return redirect('add_variants', product_id=product.id)
     
@@ -142,33 +176,89 @@ def add_product(request):
 
 def add_variants(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    allowed_attributes = product.category.attributes.prefetch_related('values').all()
+    for i in allowed_attributes:
+        print(i.values)
 
     if request.method == 'POST':
         price = request.POST.get('price')
         stock = request.POST.get('stock')
         selected_values = request.POST.getlist('attribute_values')
 
-        variant = ProductVariant.objects.create(product=product, price=price, stock=stock)
-        variant.attributes.set(selected_values)
-        variant.save()
+        # Validate all required attributes are selected
+        selected_attrs = ProductAttributeValue.objects.filter(
+            id__in=selected_values
+        ).values_list('attribute_id', flat=True)
+        
+        required_attrs = set(allowed_attributes.values_list('id', flat=True))
+        selected_attrs_set = set(selected_attrs)
+        
+        if len(selected_values) != len(required_attrs) or selected_attrs_set != required_attrs:
+            messages.error(request, "Please select exactly one value for each required attribute.")
+            return redirect('add_variants', product_id=product.id)
 
-        messages.success(request, "Variant added successfully.")
+        # Check for existing variant with exactly these attributes
+        existing_variants = ProductVariant.objects.filter(product=product).prefetch_related('attributes')
+        for variant in existing_variants:
+            variant_attrs = {attr.id for attr in variant.attributes.all()}
+            selected_attrs = {int(val) for val in selected_values}
+            if variant_attrs == selected_attrs:
+                messages.error(request, "A variant with these exact attributes already exists.")
+                return redirect('add_variants', product_id=product.id)
+
+        # Create new variant
+        variant = ProductVariant.objects.create(
+            product=product, 
+            price=price, 
+            stock=stock
+        )
+        variant.attributes.set(selected_values)
+        messages.success(request, "Variant added successfully!")
         return redirect('add_variants', product_id=product.id)
 
-    attribute_values = ProductAttributeValue.objects.all()
+    # Prepare data for template
+    attribute_groups = []
+    for attr in allowed_attributes:
+        attribute_groups.append({
+            'id': attr.id,
+            'name': attr.name,
+            'values': attr.values.all()
+        })
+
+    variants = []
+    for variant in product.variants.all().prefetch_related('attributes__attribute'):
+        variant_data = {
+            'id': variant.id,
+            'price': variant.price,
+            'stock': variant.stock,
+            'attributes': {attr_val.attribute_id: attr_val.value for attr_val in variant.attributes.all()}
+        }
+        variants.append(variant_data)
+    
     return render(request, 'seller/add_variants.html', {
         'product': product,
-        'attribute_values': attribute_values
+        'attribute_groups': attribute_groups,
+        'variants': variants,
+        'attributes': allowed_attributes
     })
 
 def add_product_attribute(request):
     if request.method == 'POST':
         name = request.POST.get('name')
+        category_ids = request.POST.getlist('categories')
+
         if name:
-            ProductAttribute.objects.create(name=name)
-            messages.success(request, 'Attribute created successfully!')
+            attribute = ProductAttribute.objects.create(name=name)
+            attribute.categories.set(category_ids)
+            attribute.save()
+
+            messages.success(request, 'Attribute created and assigned to categories successfully!')
             return redirect('add_product_attribute')
-    return render(request, 'seller/add_attribute.html')
+
+    categories = Category.objects.all()
+    return render(request, 'seller/add_attribute.html', {
+        'categories': categories
+    })
 
 
 def add_product_attribute_value(request):
@@ -209,3 +299,16 @@ def update_stock(request):
         return JsonResponse({'success': False, 'message': 'Product not found'})
     except ValueError:
         return JsonResponse({'success': False, 'message': 'Invalid stock value'})
+
+@login_required
+def seller_orders(request):
+    if request.user.user_type != 'seller':
+        return redirect('dashboard')
+
+    seller = request.user
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+
+    context = {
+        'order_items': order_items
+    }
+    return render(request, 'seller/seller_orders.html', context)

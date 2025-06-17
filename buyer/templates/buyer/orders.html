@@ -4,7 +4,7 @@
 <h2 class="text-xl font-bold mb-4 text-center">My Orders</h2>
 <div class="flex space-x-4 mb-6 justify-center items-center">
     <a href="{% url 'orders' %}" class="px-4 py-2 rounded {% if current_status == 'all' %}bg-[#4C888E] text-white{% else %}bg-gray-200{% endif %}">All Orders</a>
-    <a href="{% url 'orders' %}?status=delivered" class="px-4 py-2 rounded {% if current_status == 'delivered' %}bg-[#4C888E] text-white{% else %}bg-gray-200{% endif %}">Delivered</a>
+    <a href="{% url 'orders' %}?status=Delivered" class="px-4 py-2 rounded {% if current_status == 'delivered' %}bg-[#4C888E] text-white{% else %}bg-gray-200{% endif %}">Delivered</a>
     <a href="{% url 'orders' %}?status=cancelled" class="px-4 py-2 rounded {% if current_status == 'cancelled' %}bg-[#4C888E] text-white{% else %}bg-gray-200{% endif %}">Cancelled</a>
 </div>
 {% for order in orders %}

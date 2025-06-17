@@ -1,16 +1,22 @@
 {% extends './buyer_base.html' %}
 {% block content %}
-<h2>Saved Addresses</h2>
-<ul>
-  {% for address in addresses %}
-    <li>
-      {{ address.name }}, {{ address.street_address }}, {{ address.city }} ({{ address.phone_number }})
-      {% if address.is_default %} <strong>[Default]</strong> {% endif %}
-      <a href="{% url 'set_default_address' address.id %}">Set as Default</a>
-      <a href="{% url 'edit_address' address.id %}">Edit</a>
-      <a href="{% url 'delete_address' address.id %}">Delete</a>
-    </li>
-  {% endfor %}
-</ul>
-<a href="{% url 'add_address' %}">Add New Address</a>
+<div class="bg-white p-4 rounded shadow-md">
+  <h2 class="text-2xl font-semibold mb-4">Saved Addresses</h2>
+  <ul>
+    {% for address in addresses %}
+      <li class="flex items-center justify-between mb-2">
+        <div class="flex items-center">
+          <span class="block mr-2">{{ address.name }}, {{ address.street_address }}, {{ address.city }} ({{ address.phone_number }})</span>
+          {% if address.is_default %} <strong class="block text-xs text-green-600">[Default]</strong> {% endif %}
+        </div>
+        <div class="flex items-center">
+          <a href="{% url 'set_default_address' address.id %}" class="text-blue-500 hover:text-blue-700 mr-2">Set as Default</a>
+          <a href="{% url 'edit_address' address.id %}" class="text-blue-500 hover:text-blue-700 mr-2">Edit</a>
+          <a href="{% url 'delete_address' address.id %}" class="text-red-500 hover:text-red-700">Delete</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'add_address' %}" class="block mt-4 text-blue-500 hover:text-blue-700">Add New Address</a>
+</div>
 {% endblock %}

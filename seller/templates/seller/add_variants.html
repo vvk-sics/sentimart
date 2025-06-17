@@ -1,33 +1,88 @@
 {% extends 'seller_base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 </aside>
-<h2 class="text-xl font-semibold mb-4">Add Variant for {{ product.name }}</h2>
-
-<form method="post">
-    {% csrf_token %}
+<div class="bg-white rounded-lg p-6 w-full max-w-5xl shadow-md mx-auto mt-6">
+    <h2 class="text-xl font-bold text-gray-700 mb-4">Add Variants for {{ product.name }}</h2>
     
-    <div class="mb-4">
-        <label class="block text-gray-700">Select Attribute Values</label>
-        {% for attr in attribute_values %}
-            <label class="inline-block mr-2">
-                <input type="checkbox" name="attribute_values" value="{{ attr.id }}">
-                {{ attr }}
-            </label>
+    {% if messages %}
+    <ul class="mb-4">
+        {% for message in messages %}
+        <li class="{% if message.tags == 'error' %}text-red-600{% else %}text-green-600{% endif %}">
+            {{ message }}
+        </li>
         {% endfor %}
-    </div>
+    </ul>
+    {% endif %}
 
-    <div class="mb-4">
-        <label class="block text-gray-700">Variant Price</label>
-        <input type="text" name="price" class="border rounded w-full p-2">
-    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Add Variant Form -->
+        <div class="border p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-4">Add New Variant</h3>
+            <form method="post">
+                {% csrf_token %}
 
-    <div class="mb-4">
-        <label class="block text-gray-700">Variant Stock</label>
-        <input type="number" name="stock" class="border rounded w-full p-2">
-    </div>
+                {% for attribute in attribute_groups %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-1">{{ attribute.name }}</label>
+                    <select name="attribute_values" class="border w-full p-2 rounded" required>
+                        <option value="">-- Select {{ attribute.name }} --</option>
+                        {% for value in attribute.values %}
+                            <option value="{{ value.id }}">{{ value.value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endfor %}
 
-    <button class="bg-teal-600 text-white p-2 rounded hover:bg-teal-700">Add Variant</button>
-    <a href="{% url 'seller_dashboard' %}">Completed</a>
-</form>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Price</label>
+                    <input type="number" name="price" class="border p-2 w-full rounded" required step="0.01">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700">Stock</label>
+                    <input type="number" name="stock" class="border p-2 w-full rounded" required>
+                </div>
+
+                <button type="submit" class="bg-teal-600 text-white p-2 rounded hover:bg-teal-700 w-full">
+                    Add Variant
+                </button>
+            </form>
+        </div>
+
+        <!-- Existing Variants -->
+        <div class="border p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-4">Existing Variants</h3>
+            
+            {% if variants %}
+            <div class="space-y-4">
+                {% for variant in variants %}
+                <div class="border p-3 rounded">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium">Variant #{{ forloop.counter }}</h4>
+                            {% for attr in attributes %}
+                            <div>
+                            <label class="block mb-1">{{ attr.name }}</label>
+                            <input type="text" 
+                                    value="{{ variant.attributes.attr.id|default:'' }}"
+                                    class="border p-2 w-full bg-gray-100" readonly>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium">₹{{ variant.price }}</p>
+                            <p class="text-sm">Stock: {{ variant.stock }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500">No variants added yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
