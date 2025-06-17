@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'buyer',
     'delivery_agent',
     'recommendations',
+    'chatbot'
 ]
 
 MIDDLEWARE = [

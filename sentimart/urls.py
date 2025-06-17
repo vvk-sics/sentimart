@@ -28,6 +28,7 @@ urlpatterns = [
     path('buyer/', include('buyer.urls')),
     path('delivery_agent/', include('delivery_agent.urls')),
     path('recommendations/', include('recommendations.urls')),
+    path('chat/', include('chatbot.urls')),
 ]
 
 if settings.DEBUG:
