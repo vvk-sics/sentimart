@@ -71,7 +71,7 @@
         </form>
 
         <nav class="hidden md:flex items-center space-x-6 text-sm font-semibold text-teal-700"> 
-            <a href="" class="hover:underline">Home</a> 
+            <a href="{% url 'delivery_agent_home' %}" class="hover:underline">Home</a> 
             <a href="#" class="hover:underline">Profile</a> 
             <a href="{% url 'delivery_requests' %}?status=placed" class="hover:underline">Delivery Requests</a>
             <a href="{% url 'logout' %}" class="hover:underline">Logout</a> 

@@ -3,6 +3,7 @@ from django.conf import settings
 from categories.models import Category
 from delivery_agent.models import DeliveryAgent
 from buyer.models import Address
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 # products/models.py
 
@@ -79,7 +80,6 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name} ({self.quantity})"
-    
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -97,6 +97,13 @@ class Order(models.Model):
     is_assigned = models.BooleanField(default=False)
     assigned_to = models.ForeignKey(DeliveryAgent, null=True, blank=True, on_delete=models.SET_NULL)
     issue_reason = models.TextField(blank=True, null=True)
+    delivery_rating = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def save(self, *args, **kwargs):
+        # Update agent rating when order is delivered with rating
+        if self.status == 'Delivered' and self.delivery_rating and self.assigned_to:
+            self.assigned_to.update_rating()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.username} - {self.status}"

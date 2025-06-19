@@ -9,6 +9,11 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.shortcuts import render
+from .utils import calculate_streak, calculate_rating
+from products.models import Order
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Create your views here.
 
@@ -87,8 +92,28 @@ def delivery_agent_register(request):
 
     return render(request, 'delivery_agent/agent_register.html', context)
 
+@login_required
 def delivery_agent_dashboard(request):
-    return render(request, 'delivery_agent/agent_dashboard.html')
+    if not hasattr(request.user, 'delivery_agent_profile'):
+        return redirect('login')
+    
+    agent = request.user.delivery_agent_profile
+    agent.update_login_streak()
+    
+    # Get today's deliverable orders (using created_at instead of delivery_date)
+    today = timezone.now().date()
+    deliverable_today = Order.objects.filter(
+        assigned_to=agent,
+        status='Shipped',
+        created_at__date=today
+    ).count()
+    
+    context = {
+        'login_streak': agent.login_streak,
+        'deliverable_today': deliverable_today,
+        'agent_rating': calculate_rating(agent),
+    }
+    return render(request, 'delivery_agent/agent_dashboard.html', context)
 
 def delivery_requests(request):
     agent = DeliveryAgent.objects.get(user=request.user)

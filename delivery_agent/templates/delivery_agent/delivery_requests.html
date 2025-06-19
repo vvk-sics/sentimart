@@ -8,32 +8,38 @@
         <a href="{% url 'delivery_requests' %}?status=Pending" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Pending Delivery</a>
         <a href="{% url 'delivery_requests' %}?status=Delivered" class="px-4 py-2 rounded bg-[#4C888E] text-white ">Completed Delivery</a>
     </div>
-    {% for order in orders %}
-      <div class="border p-4 rounded mb-4">
-        <h4 class="text-lg font-bold">Order #{{ order.id }} - {{ order.user.username }}</h4>
-        <p>Status: {{ order.status }}</p>
-        
-        {% if order.status == "Shipped" %}
-          <form action="{% url 'accept_order' order.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Accept</button>
-          </form>
-          
-          <form action="{% url 'reject_order' order.id %}" method="post">
-            {% csrf_token %}
-            <textarea name="issue_reason" placeholder="Reason for rejection" required class="border p-2 rounded w-full"></textarea>
-            <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Reject</button>
-          </form>
-        {% elif order.status == "About to Deliver" %}
-          <form action="{% url 'mark_delivered' order.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Mark as Delivered</button>
-          </form>
-        {% endif %}
-      </div>
-    {% empty %}
-      <p class="text-center text-gray-600">No assigned orders.</p>
-    {% endfor %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for order in orders %}
+          <div class="border p-4 rounded">
+            <div class="flex items-center justify-between">
+              <h4 class="text-lg font-bold">Order #{{ order.id }} - {{ order.user.username }}</h4>
+              <p class="text-gray-600 text-sm">{{ order.created_at|date:"M d, Y" }}</p>
+            </div>
+            <p>Status: {{ order.status }}</p>
+            <div class="mt-4">
+              {% if order.status == "Shipped" %}
+                <form action="{% url 'accept_order' order.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Accept</button>
+                </form>
+                
+                <form action="{% url 'reject_order' order.id %}" method="post">
+                  {% csrf_token %}
+                  <textarea name="issue_reason" placeholder="Reason for rejection" required class="border p-2 rounded w-full"></textarea>
+                  <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Reject</button>
+                </form>
+              {% elif order.status == "About to Deliver" %}
+                <form action="{% url 'mark_delivered' order.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="bg-[#4C888E] text-white px-4 py-2 rounded">Mark as Delivered</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-center text-gray-600">No assigned orders.</p>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

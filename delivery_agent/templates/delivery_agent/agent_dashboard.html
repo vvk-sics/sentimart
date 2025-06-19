@@ -2,6 +2,118 @@
 {% load static %}
 
 {% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-[#4C888E] mb-2">Welcome Back</h1>
+                <p class="text-gray-600 italic mb-4">Swift. Reliable. Always on the move – delivering more than just packages, delivered purchases.</p>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-[#4C888E] flex items-center justify-center">
+                        <i class="fas fa-user text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold text-lg">{{ request.user.username }}</h2>
+                        <p class="text-gray-500 text-sm">Delivery Agent</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <img src="{% static 'images/delivery_illustration.png' %}" alt="Delivery illustration" class="h-32">
+            </div>
+        </div>
+    </div>
 
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Login Stats -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-400">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Login Streak</p>
+                    <p class="text-2xl font-bold">{{ login_streak }} days</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-blue-500"></i>
+                </div>
+            </div>
+        </div>
 
+        <!-- Deliverable Stats -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-400">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Deliverable Today</p>
+                    <p class="text-2xl font-bold">{{ deliverable_today }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <i class="fas fa-box-open text-green-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating Stats -->
+        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-400">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Your Rating</p>
+                    <p class="text-2xl font-bold">{{ agent_rating }}/5</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <i class="fas fa-star text-yellow-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-lg font-semibold text-[#4C888E] mb-4">Quick Actions</h2>
+        <div class="flex justify-evenly items-center">
+            <a href="{% url 'delivery_requests' %}" class="bg-[#F3F9FB] rounded-lg p-4 flex items-center justify-center hover:bg-[#4C888E] hover:text-white transition-colors flex-col">
+                <i class="fas fa-shipping-fast text-2xl mb-2"></i>
+                <span class="text-sm font-medium">Delivery Requests</span>
+            </a>
+            <!-- <a href="#" class="bg-[#F3F9FB] rounded-lg p-4 flex items-center justify-center hover:bg-[#4C888E] hover:text-white transition-colors flex-col">
+                <i class="fas fa-cog text-2xl mb-2"></i>
+                <span class="text-sm font-medium">Settings</span>
+            </a> -->
+            <a href="#" class="bg-[#F3F9FB] rounded-lg p-4 flex items-center justify-center hover:bg-[#4C888E] hover:text-white transition-colors flex-col">
+                <i class="fas fa-chart-line text-2xl mb-2"></i>
+                <span class="text-sm font-medium">Weekly Stats</span>
+            </a>
+            <a href="#" class="bg-[#F3F9FB] rounded-lg p-4 flex items-center justify-center hover:bg-[#4C888E] hover:text-white transition-colors flex-col">
+                <i class="fas fa-award text-2xl mb-2"></i>
+                <span class="text-sm font-medium">Rewards</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Motivation Section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-2/3 mb-4 md:mb-0">
+                <h2 class="text-lg font-semibold text-[#4C888E] mb-2">Your Journey Matters</h2>
+                <p class="text-gray-600">
+                    Every mile you ride brings you closer to rewards and drives success. Your hard work earns more than 
+                    just deliveries – it earns recognition.
+                </p>
+            </div>
+            <div class="md:w-1/3 flex justify-center">
+                <img src="{% static 'images/delivery_motivation.png' %}" alt="Motivational illustration" class="h-24">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this to your base template's head section if not already present -->
+<style>
+    .hover\:bg-\[\#4C888E\]:hover {
+        background-color: #4C888E;
+    }
+    .hover\:text-white:hover {
+        color: white;
+    }
+</style>
 {% endblock %}
