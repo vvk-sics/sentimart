@@ -12,10 +12,10 @@
     </div>
 {% endfor %}
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <!-- Product Image -->
         <div class="w-full">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full object-contain h-14">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain">
         </div>
 
         <!-- Product Details -->
@@ -141,3 +141,4 @@
 </script>
 
 {% endblock %}
+
