@@ -1,0 +1,39 @@
+{% extends './buyer_base.html' %}
+{% load static %}
+{% block content %}
+
+</aside>
+<!-- Main content -->
+<main class="flex-1 p-6 space-y-8">
+ <!-- Profile Section -->
+ <section class="max-w-2xl mx-auto border rounded-lg p-10 flex flex-col items-center" style="border-color:#d1d5db">
+  <!-- Profile Picture and Username -->
+  <div class="flex flex-col items-center">
+   <div class="relative">
+    <img alt="User avatar" class="w-[120px] h-[120px] rounded-full border border-gray-200" height="120" src="https://storage.googleapis.com/a1aa/image/92e24b1c-9b99-4545-0b29-26b8b4b020c7.jpg" width="120"/>
+    <div class="absolute bottom-0 left-0 right-0 bg-teal-700 text-white text-center font-semibold py-2 rounded-b-md" style="border-top-left-radius: 0; border-top-right-radius: 0">
+     {{ buyer.user.username }}
+    </div>
+   </div>
+   <!-- Contact Information -->
+   <div class="bg-teal-700 text-white text-xs mt-8 border border-t-0 border-teal-700 rounded-b-md p-3 w-[220px]">
+    <p class="flex items-center gap-2 mb-1">
+     <i class="fas fa-phone-alt text-yellow-400"></i>
+     {{ buyer.phone_number }}
+    </p>
+    <p class="flex items-center gap-2 mb-1 break-words">
+     <i class="fas fa-envelope text-yellow-400"></i>
+     {{ buyer.user.email }}
+    </p>
+   </div>
+   <!-- Edit Profile Button -->
+   <a href="{% url 'edit-buyer-profile' %}" class="mt-6 bg-teal-700 hover:bg-teal-800 text-white text-sm font-normal py-2 px-6 rounded flex items-center gap-2">
+    <i class="fas fa-pen"></i>
+    Edit profile
+   </a>
+  </div>
+ </section>
+</main>
+
+{% endblock %}
+

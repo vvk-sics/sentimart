@@ -4,6 +4,8 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('register/', views.buyer_register, name='buyer-register'),
+    path('buyer-profile/', views.buyer_profile, name='buyer-profile'),
+    path('edit-buyer-profile/', views.edit_buyer_profile, name='edit-buyer-profile'),
     path('home/', views.buyer_home, name='buyer-home'),
     path('buyer/search/', RedirectView.as_view(pattern_name='product-search', query_string=True)),
     path('search/', views.buyer_home, name='product-search'),

@@ -66,6 +66,46 @@ def buyer_register(request):
     
     return render(request, 'buyer/buyer_register.html')
 
+@login_required
+@never_cache
+def buyer_profile(request):
+    buyer = request.user.buyer_profile
+    return render(request, 'buyer/buyer_profile.html', {'buyer': buyer})
+
+def edit_buyer_profile(request):
+    buyer = request.user.buyer_profile
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+
+        if not username:
+            messages.error(request, 'Username is required.')
+            return redirect('edit-buyer-profile')
+        if not email:
+            messages.error(request, 'Email is required.')
+            return redirect('edit-buyer-profile')
+        if not phone_number or not phone_number.isdigit() or len(phone_number) != 10:
+            messages.error(request, 'Enter a valid 10-digit phone number.')
+            return redirect('edit-buyer-profile')
+
+        if User.objects.filter(username=username).exclude(id=request.user.id).exists():
+            messages.error(request, 'Username already taken.')
+            return redirect('edit-buyer-profile')
+        if User.objects.filter(email=email).exclude(id=request.user.id).exists():
+            messages.error(request, 'Email already registered.')
+            return redirect('edit-buyer-profile')
+
+        user = User.objects.get(id=request.user.id)
+        user.username = username
+        user.email = email
+        buyer.phone_number = phone_number
+        user.save()
+        buyer.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect('buyer-profile')
+    return render(request, 'buyer/edit_buyer_profile.html', {'buyer': buyer})
+
 # def get_user_recommendations(user):
 #     cart_cats = CartItem.objects.filter(user=user).values_list('product__category', flat=True)
 #     order_cats = OrderItem.objects.filter(order__user=user).values_list('product__category', flat=True)
