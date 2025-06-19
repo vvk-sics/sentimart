@@ -4,12 +4,16 @@ from accounts.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
-from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant, OrderItem
+from products.models import Product, ProductAttribute, ProductAttributeValue, ProductVariant, OrderItem, Order
 from categories.models import Category
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt  
+from django.views.decorators.csrf import csrf_exempt 
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Sum 
+from django.db.models.functions import Coalesce
 
 def seller_registration(request):
     context = {}
@@ -106,7 +110,49 @@ def reset_password(request):
 @login_required
 @never_cache
 def seller_dashboard(request):
-    return render(request, 'seller/seller_dashboard.html')
+    if request.user.user_type != 'seller':
+        return redirect('dashboard')
+    
+    seller = request.user
+    products = Product.objects.filter(seller=seller)
+    
+    # Get all order items for this seller
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+    
+    # Dashboard metrics
+    total_sales = sum(item.price * item.quantity for item in order_items)
+    
+    # New orders in last 7 days
+    new_orders = order_items.filter(
+        order__created_at__gte=timezone.now()-timedelta(days=7)
+    ).values('order').distinct().count()
+    
+    # Unique customers (users who ordered this seller's products)
+    customer_ids = order_items.values_list('order__user', flat=True).distinct()
+    customers = len(customer_ids)
+    
+    # Best selling products (top 6)
+    best_sellers = products.annotate(
+        total_sold=Coalesce(Sum('orderitem__quantity'), 0)
+    ).order_by('-total_sold')[:6]
+    
+    # Low stock alert (products with stock < 10)
+    low_stock = products.filter(stock__lt=10)
+    
+    # Recent orders (last 6 distinct orders)
+    recent_orders = Order.objects.filter(
+        id__in=order_items.values_list('order', flat=True).distinct()
+    ).order_by('-created_at')[:6]
+    
+    context = {
+        'total_sales': total_sales,
+        'new_orders': new_orders,
+        'customers': customers,
+        'best_sellers': best_sellers,
+        'low_stock': low_stock,
+        'recent_orders': recent_orders,
+    }
+    return render(request, 'seller/seller_dashboard.html', context)
 
 @login_required
 @never_cache
