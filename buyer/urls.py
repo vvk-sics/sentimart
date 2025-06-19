@@ -1,9 +1,12 @@
 from django.urls import path
 from . import views
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('register/', views.buyer_register, name='buyer-register'),
     path('home/', views.buyer_home, name='buyer-home'),
+    path('buyer/search/', RedirectView.as_view(pattern_name='product-search', query_string=True)),
+    path('search/', views.buyer_home, name='product-search'),
     path('product/<int:pk>/', views.product_detail, name='product-detail'),
     path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add-to-cart'),
     path('cart/', views.cart_view, name='cart'),
@@ -21,6 +24,7 @@ urlpatterns = [
     path('addresses/<int:address_id>/edit/', views.edit_address, name='edit_address'),
     path('addresses/<int:address_id>/delete/', views.delete_address, name='delete_address'),
     path('addresses/<int:address_id>/set-default/', views.set_default_address, name='set_default_address'),
+    path('api/search/suggestions/', views.search_suggestions, name='search-suggestions'),
 
     # path('search/', views.search_products, name='search_products'),
 

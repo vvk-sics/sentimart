@@ -91,37 +91,67 @@ def buyer_register(request):
 @login_required
 @never_cache
 def buyer_home(request):
-    smart_phones = Product.objects.filter(category__name='Smart Phones', status='approved')
-    smart_watches = Product.objects.filter(category__name='Smart Watches', status='approved')
+    # Common data for both URLs
     categories = Category.objects.all()
-    query = request.GET.get('q', '')
-    search_results = Product.objects.filter(
-        Q(name__icontains=query) |
-        Q(description__icontains=query) |
-        Q(brand_name__icontains=query) |
-        Q(model_number__icontains=query),
-        status='approved'  # Only show approved products in search
-    )
-
-    # Get popular products
     popular_products = get_popular_products(limit=8)
     
-    # Get personalized recommendations if user is authenticated
+    # Search-specific logic
+    query = request.GET.get('q', '').strip()
+    if query:
+        search_results = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(brand_name__icontains=query) |
+            Q(model_number__icontains=query),
+            status='approved'
+        ).distinct().order_by('-created_at')
+        
+        context = {
+            'is_search_page': True,
+            'query': query,
+            'search_results': search_results,
+            'categories': categories,
+            'popular_products': popular_products,
+        }
+        return render(request, 'buyer/buyer_home.html', context)
+  
+    smart_phones = Product.objects.filter(category__name='Smart Phones', status='approved')
+    smart_watches = Product.objects.filter(category__name='Smart Watches', status='approved')
+    
     personalized_products = []
     if request.user.is_authenticated:
         personalized_products = get_personalized_recommendations(request.user.id, limit=8)
     
     context = {
+        'is_search_page': False,
         'smart_phones': smart_phones,
+        'smart_watches': smart_watches,
         'categories': categories,
-        'query': query,
-        'search_results': search_results,
-        'smart_watches': smart_watches,  
         'popular_products': popular_products,
         'personalized_products': personalized_products,
     }
-    
     return render(request, 'buyer/buyer_home.html', context)
+
+@csrf_exempt
+def search_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    suggestions = []
+    
+    if query and len(query) >= 2:
+        products = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(brand_name__icontains=query),
+            status='approved'
+        )[:5]
+        
+        suggestions = [{
+            'id': p.id,
+            'name': p.name,
+            'brand_name': p.brand_name,
+            'url': reverse('product-detail', kwargs={'pk': p.id})
+        } for p in products]
+    
+    return JsonResponse({'suggestions': suggestions})
         
 from collections import defaultdict
 @login_required
