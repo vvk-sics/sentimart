@@ -11,6 +11,13 @@ class ProductAttribute(models.Model):
     name = models.CharField(max_length=100)
     categories = models.ManyToManyField(Category, related_name='attributes')
 
+    def __str__(self):
+        return f"{self.name} (Applies to: {', '.join(cat.name for cat in self.categories.all()) or 'All'})"
+
+    def get_values_display(self):
+        """Returns comma-separated list of all possible values for this attribute"""
+        return ", ".join(value.value for value in self.values.all())
+
 class Product(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
