@@ -22,6 +22,7 @@ def user_login(request):
             elif user.user_type == 'user':
                 return redirect('user_dashboard')
             elif user.user_type == 'buyer':
+                messages.success(request, "Logged in successfully.")
                 return redirect('product-search')
             elif user.user_type == 'delivery_agent':
                 return redirect('delivery_agent_home')
@@ -37,4 +38,5 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    messages.success(request, "Logged out successfully.")
+    return redirect('landing_page')

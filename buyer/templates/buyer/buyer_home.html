@@ -3,6 +3,11 @@
 
 
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <p style="{% if message.tags == 'success' %}color:green{% endif %}" class="color:red">{{ message }}</p>
+    {% endfor %}
+{% endif %}
 <div class="container mx-auto px-4 py-8">
     <!-- Search Results Section -->
     {% if query %}
@@ -210,7 +215,7 @@
             </ul>
         </section> 
         <!-- Electronics Brands -->
-        <section class="mt-12">
+         <!-- <section class="mt-12">
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm sm:text-base font-normal"> Top <a href="#"
                         class="text-blue-600 hover:underline">Electronics Brands</a> </h3> 
@@ -221,7 +226,7 @@
             </div>
             <hr class="border-blue-600 border-b-2 w-28 mb-4" />
             <div class="flex space-x-6 overflow-x-auto pb-4 h-auto w-full sm:w-[90vw] lg:w-[78vw] snap-x scroll-smooth">
-                <!-- Apple Card -->
+        
                 <div class="flex-shrink-0 snap-start rounded-lg bg-gray-800 text-white p-4 w-[70vw] sm:w-[40vw] lg:w-[24vw] h-[220px] flex items-center justify-between shadow-lg"
                     tabindex="0" aria-label="Apple brand with up to 80% off">
                     <div class="flex flex-col justify-between h-full">
@@ -240,25 +245,25 @@
                         alt="Apple iPhone 13 Pro smartphone front view" class="max-w-[100px] h-auto object-contain" />
                 </div>
             
-                <!-- Realme Card -->
+         
                 <div class="flex-shrink-0 snap-start rounded-lg bg-yellow-50 p-4 w-[70vw] sm:w-[40vw] lg:w-[24vw] h-[220px] flex items-center justify-between shadow-lg"
                     tabindex="0" aria-label="Realme brand with up to 80% off">
                     <div class="flex flex-col justify-between h-full">
                         <div>
                             <div class="text-xs bg-yellow-200 rounded px-2 py-1 mb-1 inline-block font-semibold text-yellow-900">REALME</div>
-                            <div class="bg-yellow-200 rounded-lg p-1 w-8 h-8 flex items-center justify-center mt-auto">
-                                <img src="https://d3fixynhjasvbt.cloudfront.net/k53xoh%2Fpreview%2F66330471%2Fmain_large.png?response-content-disposition=inline%3Bfilename%3D%22main_large.png%22%3B&response-content-type=image%2Fpng&Expires=1744965348&Signature=K880gTcguC10Jj-u~EPNv3HVxF34g4DkjG1gwrQVAVd6RAp3U~T4-1tB-PUmSgq~YfQyWHbF888W5zsLDB0SsrWsR2yoU2g4aAJldzZrrcUH-2TEFaQEstIDGp92mPDHhlc~aHyLsr4ovfOmoAH5zAF469Rt8Wm--orfPERHVZt6ZadLXJEeYgMhi52O3y89Q2TNoCDMJoIy05jk0puzBiAIqorK4IYZs0eaet8dTZG~rNVk65IJ6pwLIAmIN7AlXPv0wxjBjZnhK5EG1ze2wQXrYz2Snik9J2kVQTw2rxpxGbJ2ssmD6SxuXKN30hTEB6cADPiJOTku~sXOwKmB4A__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ" 
+                            <div class="bg-yellow-200 rounded-lg flex items-center justify-center mt-auto">
+                                <img src="{% static 'images/realme.png' %}" 
                                      alt="Realme logo" 
                                      class="w-6 h-6" />
                             </div>
                             <div class="text-sm font-semibold">UP to 80% OFF</div>
                         </div>
                     </div>
-                    <img src="https://s3-alpha-sig.figma.com/img/2bfd/ce2a/2dd63a5fa5329f74bea440064b616294?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=JAQ0tnelQXgUe6c1Ch7brTCYqkXZRkM-D1LEewGrcW7KOe2pQtUCyDFJepGpENrqLT~HBLwyMbZp6EvwiUofTFvPMuznsvTXx9ZuDwM3cGXjG2~P11oyTVp-XryI5i3Bkm6KtsuVEfaxV7rKtDpGXYNLFktW~inS4hHJN4sV7-PZz58Xgj7FGfzne9BJKvstAaV7Tl7U65nCyZSYLgVBrkVaOY4MVdUDdQYHz4jxTReP6I5RnYqsVVgA-Ne4vXnp-Rx6yLSbqXFrsm~He1gClVg54ZHfsVIVtOydCFLwG-GbLs2pP8zh-tGAjIx6FQ0mNVkgf~3vSyDHbavBdYtYUg__"
+                    <img src="{% static 'images/image 9.png' %}"
                         alt="Realme smartphone front view" class="max-w-[100px] h-auto object-contain" />
                 </div>
             
-                <!-- Xiaomi Card -->
+              
                 <div class="flex-shrink-0 snap-start rounded-lg bg-orange-50 p-4 w-[70vw] sm:w-[40vw] lg:w-[24vw] h-[220px] flex items-center justify-between shadow-lg"
                     tabindex="0" aria-label="Xiaomi brand with up to 80% off">
                     <div class="flex flex-col justify-between h-full">
@@ -272,13 +277,13 @@
                             <div class="text-sm font-semibold">UP to 80% OFF</div>
                         </div>
                     </div>
-                    <img src="https://s3-alpha-sig.figma.com/img/9546/03ea/61eccec3afecbe916c242c4460169441?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=oEFf7M1v8fWDwy1WjVRgXAqqRSeShCLRRUWADvNca3sE3-hji1xBeIA-5LOtzRyxmUig2enEgIH~wOll-OIERlM72mcAf4icBnRzrjcRJyN04Kd6JXMiOPZIE5-G4OnOtxltyT6wZqXRkXX-5PECdCGUqAut3riREADOGttlQmaujFLW~8DpKkAOhLjJjMVKNfCCbs6M8lAXTgnj9FZBzOzKSDGeGR2MVQ0gzSUUxp7cz8rXbo7q7n9adFmI15ZaA7tOYJB2Nx9zX9qUMr1kWufhapgCcG7jg3rNRy2gdWCz-JmNb4i03qcAA5YIau2fU1d4tmInOn5BUOWGlPfe8g__"
+                    <img src="{% static 'images/realme_phone.png' %}"
                         alt="Xiaomi smartphone front view" class="max-w-[100px] h-auto object-contain" />
                 </div>
             </div>
             
             <div class="w-20 h-1 bg-teal-600 rounded-full mt-2 mx-auto"></div>
-        </section> 
+        </section>  -->
         <!-- Smartwatches Section -->
         <section class="mt-10">
             <div class="flex justify-between items-center mb-2">
