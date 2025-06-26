@@ -150,6 +150,12 @@ def edit_category(request, category_id):
         'errors': errors
     })
 
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    category.delete()
+    messages.success(request, 'Category deleted successfully!')
+    return redirect('add_category')
+
 @login_required
 @never_cache
 def approve_product(request, product_id):

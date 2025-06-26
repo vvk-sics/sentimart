@@ -10,7 +10,7 @@
   {% if messages %}
   <div class="px-6 py-3">
       {% for message in messages %}
-      <p class="{% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} text-sm p-3 rounded mb-4">
+      <p class="{% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} text-sm p-3 rounded mb-4" id="message">
           {{ message }}
       </p>
       {% endfor %}
@@ -102,11 +102,11 @@
        <img alt="Electronic product image showing a small appliance" class="inline-block" height="50" src="{{ categorie.image.url }}" width="50"/>
       </td>
       <td class="py-4 px-4 align-middle flex gap-4">
-       <span class="bg-green-600 text-white text-xs rounded-full px-3 py-1 self-center">
-        Active
-       </span>
-       <a href="{% url 'edit_category' categorie.id %}" class="bg-[#4a7a81] text-black text-xs rounded-full px-4 py-1">
+        <a href="{% url 'edit_category' categorie.id %}" class="bg-[#4a7a81] text-black text-xs rounded-full px-4 py-1">
           Edit
+        </a>
+        <a href="{% url 'delete_category' categorie.id %}" class="bg-red-600 text-white text-xs rounded-full px-3 py-1 self-center">
+         Delete
         </a>
       </td>
      </tr>
@@ -118,13 +118,4 @@
  </section>
 </main>
 </div>
-
-    <script>
-        setTimeout(function() {
-            var element = document.querySelector('p');
-            if (element) {
-                element.style.display = 'none';
-            }
-        }, 2000);
-    </script>
 {% endblock %}
