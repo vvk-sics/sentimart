@@ -98,8 +98,7 @@ def add_category(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         image = request.FILES.get('image')
-        
-        # Validate inputs
+      
         if not name:
             errors['name'] = 'Category name is required'
         if not image:
@@ -113,16 +112,42 @@ def add_category(request):
             except Exception as e:
                 messages.error(request, f'Error adding category: {str(e)}')
         else:
-            # Pass the submitted values back to template
             request.session['submitted_name'] = name
     
-    # Get the submitted name from session if exists
     submitted_name = request.session.pop('submitted_name', '')
     
     return render(request, 'admin_panel/add_category.html', {
         'categories': categories,
         'errors': errors,
         'submitted_name': submitted_name
+    })
+
+def edit_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    errors = {}
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        image = request.FILES.get('image')
+        
+        # Validate inputs
+        if not name:
+            errors['name'] = 'Category name is required'
+        
+        if not errors:
+            try:
+                category.name = name
+                if image:  # Only update image if new one was provided
+                    category.image = image
+                category.save()
+                messages.success(request, 'Category updated successfully!')
+                return redirect('add_category')  # Redirect back to category management
+            except Exception as e:
+                messages.error(request, f'Error updating category: {str(e)}')
+    
+    return render(request, 'admin_panel/edit_category.html', {
+        'category': category,
+        'errors': errors
     })
 
 @login_required

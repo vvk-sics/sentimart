@@ -11,6 +11,7 @@ urlpatterns = [
     path('sellers/toggle/<int:seller_id>/', views.toggle_seller_status, name='toggle-seller'),
     path('seller/reject/<int:seller_id>/', views.seller_reject_reason, name='seller_reject_reason'),
     path('add_category/', views.add_category, name='add_category'),
+    path('categories/edit/<int:category_id>/', views.edit_category, name='edit_category'),
 
     path('manage_products/', views.manage_products, name='manage_products'),
     path('admin/approve-product/<int:product_id>/', views.approve_product, name='approve_product'),

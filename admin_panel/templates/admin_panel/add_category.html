@@ -105,9 +105,9 @@
        <span class="bg-green-600 text-white text-xs rounded-full px-3 py-1 self-center">
         Active
        </span>
-       <button class="bg-[#4a7a81] text-black text-xs rounded-full px-4 py-1">
-        Edit
-       </button>
+       <a href="{% url 'edit_category' categorie.id %}" class="bg-[#4a7a81] text-black text-xs rounded-full px-4 py-1">
+          Edit
+        </a>
       </td>
      </tr>
         {% endfor %}
