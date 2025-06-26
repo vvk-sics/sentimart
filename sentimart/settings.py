@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-c5@%s271v)!vyl4su_il64f#0v)whrrfvgr_qt3=iq0v@nqfo-
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','0.0.0.0','python.sicsglobal.com', '127.0.0.1']
-# FORCE_SCRIPT_NAME = '/inventory_management'
+FORCE_SCRIPT_NAME = '/inventory_management'
 # Add CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
     'https://python.sicsglobal.com',
