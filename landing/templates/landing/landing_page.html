@@ -26,18 +26,35 @@
         {% endif %}
     <header class="flex items-center justify-between px-6 sm:px-6 md:px-10 py-4 border-b border-gray-200">
         <div class="p-4 ml-6">
+            <!-- Hamburger Button - Updated with click handler -->
             <button 
-              class="flex flex-col justify-center items-start w-10 h-10 space-y-1.5 px-2 py-2" 
-              aria-label="Toggle navigation"
-              style="background-color: #F3F9FB; border-radius: 15%;">
-              
-              <!-- Line 1 -->
-              <span class="block w-6 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
-              <!-- Line 2 -->
-              <span class="block w-5 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
-              <!-- Line 3 -->
-              <span class="block w-4 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+            id="mobileMenuButton"
+            class="flex flex-col justify-center items-start w-10 h-10 space-y-1.5 px-2 py-2" 
+            aria-label="Toggle navigation"
+            style="background-color: #F3F9FB; border-radius: 15%;"
+            onclick="toggleMobileMenu()">
+            
+            <!-- Line 1 -->
+            <span class="block w-6 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+            <!-- Line 2 -->
+            <span class="block w-5 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
+            <!-- Line 3 -->
+            <span class="block w-4 h-0.5 bg-gray-400 rounded transition-all duration-300"></span>
             </button>
+
+            <!-- Mobile Menu - Added this new section -->
+            <div id="mobileMenu" class="hidden fixed inset-0 z-50 bg-white p-20">
+            <div class="flex justify-end">
+                <button onclick="toggleMobileMenu()" class="text-2xl">×</button>
+            </div>
+            
+            <nav class="mt-10 space-y-6 text-lg">
+                <a href="{% url 'landing_page' %}" class="block hover:text-teal-700">Home</a>
+                <a href="{% url 'seller_register' %}" class="block hover:text-teal-700">Sell on Sentimart</a>
+                <a href="{% url 'delivery_agent_register' %}" class="block hover:text-teal-700">Deliver with Sentimart</a>
+                <a href="{% url 'login' %}" class="block hover:text-teal-700">Login</a>
+            </nav>
+            </div>
           </div>
           
             <!-- Sentimart Logo and Brand Name -->
@@ -72,8 +89,6 @@
 
         <nav class="hidden md:flex items-center space-x-6 text-sm font-semibold text-teal-700">
             <a href="{% url 'landing_page' %}" class="hover:underline">Home</a>
-            <a href="{% url 'seller_register' %}" class="hover:underline">Become a seller</a>
-            <a href="{% url 'delivery_agent_register' %}" class="hover:underline">Become a delivery agent</a>
             <a href="{% url 'login' %}" class="hover:underline">Login</a> 
         </nav>
         
@@ -413,8 +428,23 @@
             if (element) {
                 element.style.display = 'none';
             }
-        }, 1000);
+        }, 2000);
     </script>
+
+    <script>
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenu.classList.toggle('hidden');
+    document.body.style.overflow = mobileMenu.classList.contains('hidden') ? 'auto' : 'hidden';
+  }
+
+  // Close menu when clicking outside
+  document.getElementById('mobileMenu').addEventListener('click', function(e) {
+    if (e.target === this) {
+      toggleMobileMenu();
+    }
+  });
+</script>
 </body>
 
 </html>

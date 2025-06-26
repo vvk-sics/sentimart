@@ -93,12 +93,37 @@ def buyers_list(request):
 @never_cache
 def add_category(request):
     categories = Category.objects.all()
+    errors = {}
+    
     if request.method == 'POST':
         name = request.POST.get('name')
         image = request.FILES.get('image')
-        Category.objects.create(name=name, image=image)
-        return redirect('add_category')
-    return render(request, 'admin_panel/add_category.html', {'categories': categories})
+        
+        # Validate inputs
+        if not name:
+            errors['name'] = 'Category name is required'
+        if not image:
+            errors['image'] = 'Category image is required'
+        
+        if not errors:
+            try:
+                Category.objects.create(name=name, image=image)
+                messages.success(request, 'Category added successfully!')
+                return redirect('add_category')
+            except Exception as e:
+                messages.error(request, f'Error adding category: {str(e)}')
+        else:
+            # Pass the submitted values back to template
+            request.session['submitted_name'] = name
+    
+    # Get the submitted name from session if exists
+    submitted_name = request.session.pop('submitted_name', '')
+    
+    return render(request, 'admin_panel/add_category.html', {
+        'categories': categories,
+        'errors': errors,
+        'submitted_name': submitted_name
+    })
 
 @login_required
 @never_cache
