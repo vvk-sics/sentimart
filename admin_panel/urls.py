@@ -22,6 +22,13 @@ urlpatterns = [
     path('order_management', views.order_management, name='order_management'),
     path('admin/ship/<int:order_id>/', views.ship_order, name='ship_order'),
 
+    path('delivery-agents/', views.delivery_agents_list, name='delivery-agents-list'),
+    path('delivery-agent/<int:agent_id>/', views.delivery_agent_view, name='delivery-agent-view'),
+    path('toggle-agent/<int:agent_id>/', views.toggle_agent_status, name='toggle-agent'),
+    path('agent-requests/', views.agent_requests, name='agent-requests'),
+    path('agent-request/<int:agent_id>/', views.agent_request_detail, name='agent-request-detail'),
+    path('agent-reject/<int:agent_id>/', views.agent_reject_reason, name='agent-reject-reason'),
+
     
 
 

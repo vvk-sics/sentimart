@@ -15,6 +15,7 @@ from datetime import timedelta
 from django.db.models import Sum 
 from django.db.models.functions import Coalesce
 
+@never_cache
 def seller_registration(request):
     context = {}
     if request.method == "POST":

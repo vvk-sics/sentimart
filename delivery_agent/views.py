@@ -71,7 +71,7 @@ def delivery_agent_register(request):
             context['form_data'] = request.POST
             return render(request, 'delivery_agent/agent_register.html', context)
 
-        user = User.objects.create_user(username=full_name, email=email, password=password)
+        user = User.objects.create_user(username=full_name, email=email, password=password, is_active=False)
         user.user_type = 'delivery_agent'
         user.save()
 
@@ -87,7 +87,7 @@ def delivery_agent_register(request):
             own_vehicle=own_vehicle
         )
 
-        messages.success(request, "Registration successful.")
+        messages.success(request, "Registration successful! Please wait for admin approval.")
         return redirect('login')
 
     return render(request, 'delivery_agent/agent_register.html', context)

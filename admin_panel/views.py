@@ -91,6 +91,64 @@ def buyers_list(request):
 
 @login_required
 @never_cache
+def delivery_agents_list(request):
+    agents = DeliveryAgent.objects.all()
+    return render(request, 'admin_panel/delivery_agents.html', {'agents': agents})
+
+@login_required
+@never_cache
+def delivery_agent_view(request, agent_id):
+    agent = get_object_or_404(DeliveryAgent, id=agent_id)
+    return render(request, 'admin_panel/delivery_agent_view.html', {'agent': agent})
+
+@login_required
+@never_cache
+def toggle_agent_status(request, agent_id):
+    agent = get_object_or_404(DeliveryAgent, id=agent_id)
+    user = agent.user
+    user.is_active = not user.is_active
+    user.save()
+    return redirect('delivery-agents-list')
+
+@login_required
+@never_cache
+def agent_requests(request):
+    agents = DeliveryAgent.objects.filter(is_approved=False, is_rejected=False)
+    return render(request, 'admin_panel/agent_requests.html', {'agents': agents})
+
+@login_required
+@never_cache
+def agent_request_detail(request, agent_id):
+    agent = get_object_or_404(DeliveryAgent, id=agent_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            agent.is_approved = True
+            agent.save()
+        elif action == 'reject':
+            reason = request.POST.get('reason', '')
+            agent.is_rejected = True
+            agent.rejection_reason = reason
+            agent.save()
+        return redirect('agent_requests')
+
+    return render(request, 'admin_panel/agent_request_viewmore.html', {'agent': agent})
+
+@login_required
+@never_cache
+def agent_reject_reason(request, agent_id):
+    agent = get_object_or_404(DeliveryAgent, id=agent_id)
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        agent.is_rejected = True
+        agent.rejection_reason = reason
+        agent.save()
+        return redirect('agent_requests') 
+    return render(request, 'admin_panel/agent_reject_reason.html', {'agent': agent})
+
+@login_required
+@never_cache
 def add_category(request):
     categories = Category.objects.all()
     errors = {}

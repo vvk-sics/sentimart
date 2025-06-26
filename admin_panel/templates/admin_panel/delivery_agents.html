@@ -1,0 +1,67 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+</aside>
+<main class="flex-1 p-6">
+  <header class="flex flex-col sm:flex-row justify-between items-center border-b border-gray-300 pb-2 mb-8">
+    <h1 class="text-[#4a7a87] font-semibold text-lg mb-3 sm:mb-0">
+      Delivery Agents
+    </h1>
+    <form class="w-full sm:w-80">
+      <label for="search" class="sr-only">Search</label>
+      <div class="flex items-center border border-[#4a7a87] rounded-full px-4 py-1 text-[#4a7a87]">
+        <i class="fas fa-search text-[#4a7a87]"></i>
+        <input id="search" type="search" placeholder="Search" class="flex-grow bg-transparent outline-none text-sm ml-2"/>
+      </div>
+    </form>
+  </header>
+
+  <section>
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-[#4a7a87] rounded-lg text-sm text-left">
+        <thead>
+          <tr class="text-[#164a5a] font-semibold text-center border-b border-[#4a7a84]">
+            <th class="px-3 py-2 min-w-[70px]">Sl no</th>
+            <th class="px-3 py-2 min-w-[60px]">Agent pic</th>
+            <th class="px-3 py-2 min-w-[90px]">Full name</th>
+            <th class="px-3 py-2 min-w-[110px]">Email id</th>
+            <th class="px-3 py-2 min-w-[100px]">Phone Number</th>
+            <th class="px-3 py-2 min-w-[100px]">Pincode</th>
+            <th class="px-3 py-2 min-w-[100px]">Action</th>
+          </tr>
+        </thead>
+        <tbody class="text-black text-center">
+          {% for agent in agents %}
+          <tr class="border-b border-[#4a7a84]">
+            <td class="px-3 py-2 font-normal">{{ forloop.counter }}</td>
+            <td class="px-3 py-2 flex justify-center">
+              <div class="w-8 h-8 rounded-full bg-[#4a7a84] text-white flex items-center justify-center font-semibold">
+                {{ agent.user.username|first|upper }}
+              </div>
+            </td>
+            <td class="px-3 py-2 font-normal">{{ agent.user.username }}</td>
+            <td class="px-3 py-2 font-normal leading-snug">{{ agent.user.email }}</td>
+            <td class="px-3 py-2 font-normal">{{ agent.phone }}</td>
+            <td class="px-3 py-2 font-normal">{{ agent.pincode }}</td>
+            <td class="px-3 py-2">
+              <form method="post" action="{% url 'toggle-agent' agent.id %}" class="inline-block">
+                {% csrf_token %}
+                {% if agent.user.is_active %}
+                  <button class="bg-[#319F43] text-white text-xs rounded-full px-3 py-1 w-[80px]">Active</button>
+                {% else %}
+                  <button class="bg-[#E33629] text-white text-xs rounded-full px-3 py-1 w-[80px]">Deactive</button>
+                {% endif %}
+              </form>
+              <a href="{% url 'delivery-agent-view' agent_id=agent.id %}" class="inline-block ml-2">
+                <button class="bg-[#4a7a84] text-white text-xs rounded-full px-3 py-1">View more</button>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</div>
+{% endblock content %}
