@@ -194,6 +194,7 @@ def search_suggestions(request):
     return JsonResponse({'suggestions': suggestions})
         
 from collections import defaultdict
+from datetime import datetime, timedelta
 @login_required
 @never_cache
 def product_detail(request, pk):
@@ -221,12 +222,16 @@ def product_detail(request, pk):
     avg_rating = product.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
     rating_count = product.reviews.count()
 
+    today = datetime.today()
+    delivery_date = today + timedelta(days=7)
+
 
     return render(request, "buyer/product_detail.html", {
         "product": product,
         "attributes": attributes_data,
         'avg_rating': round(avg_rating, 1),
-        'rating_count': rating_count
+        'rating_count': rating_count,
+        'delivery_date': delivery_date,
     })
     
 
