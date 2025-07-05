@@ -7,15 +7,19 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for product in products %}
-        <div class="bg-white rounded-lg shadow-md p-4">
-            <a href="{% url 'product-detail' product.id %}" class="block group hover:no-underline">
-                <h3 class="text-lg font-medium mb-2">{{ product.name }}</h3>
-                <p class="text-gray-600 mb-4">₹{{ product.price }}</p>
-                <img src="{{ product.image.url }}" class="w-full h-56 object-cover rounded-lg group-hover:scale-110 transition duration-300" alt="{{ product.name }}">
-            </a>
-            <div class="flex items-center justify-between mt-4">
-                <a href="{% url 'product-detail' product.id %}" class="inline-block px-4 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">View</a>
-                <!-- <a href="{% url 'add-to-cart' product.id %}" class="inline-block px-4 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-green-500 hover:bg-green-600">Add to Cart</a> -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="aspect-w-1 aspect-h-1">
+                <a href="{% url 'product-detail' product.id %}">
+                    <img src="{{ product.image.url }}" class="object-cover w-24 h-28 mx-auto" alt="{{ product.name }}">
+                </a>
+            </div>
+            <div class="p-4">
+                <a href="{% url 'product-detail' product.id %}" class="block text-lg font-medium text-gray-900 mb-2">{{ product.name }}</a>
+                <p class="text-gray-600 mb-4">₹{{ product.base_price }}</p>
+                <div class="flex items-center justify-between mt-4">
+                    <a href="{% url 'product-detail' product.id %}" class="inline-block px-4 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">View</a>
+                    <!-- <a href="{% url 'add-to-cart' product.id %}" class="inline-block px-4 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-green-500 hover:bg-green-600">Add to Cart</a> -->
+                </div>
             </div>
         </div>
     {% empty %}
