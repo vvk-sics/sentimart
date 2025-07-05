@@ -56,7 +56,7 @@ class Product(models.Model):
         return 0
     
 class ProductAttributeValue(models.Model):
-    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values')
+    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values', null=True, blank=True)
     value = models.CharField(max_length=100)
     
     class Meta:

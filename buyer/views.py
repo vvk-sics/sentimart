@@ -138,13 +138,33 @@ def buyer_home(request):
     # Search-specific logic
     query = request.GET.get('q', '').strip()
     if query:
+        # Search in product fields and category names
         search_results = Product.objects.filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
             Q(brand_name__icontains=query) |
-            Q(model_number__icontains=query),
+            Q(model_number__icontains=query) |
+            Q(category__name__icontains=query),
             status='approved'
         ).distinct().order_by('-created_at')
+        
+        # If no direct matches, try fuzzy search with individual words
+        if not search_results.exists():
+            words = query.split()
+            if len(words) > 1:
+                q_objects = Q()
+                for word in words:
+                    q_objects |= (
+                        Q(name__icontains=word) |
+                        Q(description__icontains=word) |
+                        Q(brand_name__icontains=word) |
+                        Q(model_number__icontains=word) |
+                        Q(category__name__icontains=word)
+                    )
+                search_results = Product.objects.filter(
+                    q_objects,
+                    status='approved'
+                ).distinct().order_by('-created_at')
         
         context = {
             'is_search_page': True,
@@ -178,18 +198,34 @@ def search_suggestions(request):
     suggestions = []
     
     if query and len(query) >= 2:
+        # Product suggestions
         products = Product.objects.filter(
             Q(name__icontains=query) |
             Q(brand_name__icontains=query),
             status='approved'
-        )[:5]
+        )[:3]
         
-        suggestions = [{
-            'id': p.id,
-            'name': p.name,
-            'brand_name': p.brand_name,
-            'url': reverse('product-detail', kwargs={'pk': p.id})
-        } for p in products]
+        # Category suggestions
+        categories = Category.objects.filter(
+            name__icontains=query
+        )[:2]
+        
+        suggestions = [
+            {
+                'type': 'product',
+                'id': p.id,
+                'name': p.name,
+                'brand_name': p.brand_name,
+                'url': reverse('product-detail', kwargs={'pk': p.id})
+            } for p in products
+        ] + [
+            {
+                'type': 'category',
+                'id': c.id,
+                'name': c.name,
+                'url': reverse('category_products', kwargs={'slug': c.slug})
+            } for c in categories
+        ]
     
     return JsonResponse({'suggestions': suggestions})
         
