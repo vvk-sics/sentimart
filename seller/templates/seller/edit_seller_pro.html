@@ -42,49 +42,49 @@
             <td class="py-2 px-3 font-normal text-left w-1/2">Username</td>
             <td class="py-2 px-3 font-normal text-right w-1/2">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="username"
-                value="{{ seller.user.username }}" />
+                value="{{ seller.user.username }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left w-1/2">Email</td>
             <td class="py-2 px-3 font-normal text-right w-1/2">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="email"
-                value="{{ seller.user.email }}" />
+                value="{{ seller.user.email }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left w-1/2">Phone number</td>
             <td class="py-2 px-3 font-normal text-right w-1/2">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="phone_number"
-                value="{{ seller.phone_number }}" />
+                value="{{ seller.phone_number }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left">Display name</td>
             <td class="py-2 px-3 font-normal text-right">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="business_name"
-                value="{{ seller.business_name }}" />
+                value="{{ seller.business_name }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left">Business Type</td>
             <td class="py-2 px-3 font-normal text-right">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="business_type"
-                value="{{ seller.business_type }}" />
+                value="{{ seller.business_type }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left">Business address</td>
             <td class="py-2 px-3 font-normal text-right">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="business_address"
-                value="{{ seller.business_address }}" />
+                value="{{ seller.business_address }}" required/>
             </td>
           </tr>
           <tr class="border-b border-[#4B7B82]">
             <td class="py-2 px-3 font-normal text-left">Registration Number</td>
             <td class="py-2 px-3 font-normal text-right">
               <input type="text" class="w-full border border-[#4B7B82] rounded p-2" name="registration_number"
-                value="{{ seller.registration_number }}" />
+                value="{{ seller.registration_number }}" required/>
             </td>
           </tr>
           <tr>
@@ -94,7 +94,7 @@
               <p>Current: <a href="{{ seller.validation_document.url }}" target="_blank">View</a></p>
               {% endif %}
               <input type="file" name="validation_document"
-                class="w-full border border-[#4B7B82] rounded p-2" />
+                class="w-full border border-[#4B7B82] rounded p-2" required/>
             </td>
           </tr>
         </tbody>
