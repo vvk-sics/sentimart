@@ -1,0 +1,261 @@
+{% extends './buyer_base.html' %}
+{% load static %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <p style="{% if message.tags == 'success' %}color:green{% endif %}" class="color:red">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4>Payment Method</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="payment-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <!-- Credit Card Option -->
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="payment_method" id="credit-card" value="credit_card" checked>
+                                <label class="form-check-label" for="credit-card">
+                                    <i class="fas fa-credit-card mr-2"></i> Credit/Debit Card
+                                </label>
+                            </div>
+                            <div id="credit-card-details" class="ml-4 mb-4">
+                                <div class="form-group">
+                                    <label for="card-number">Card Number</label>
+                                    <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" pattern="[0-9\s]{13,19}" required>
+                                    <small class="form-text text-muted">Enter 16-digit card number</small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="card-name">Name on Card</label>
+                                        <input type="text" class="form-control" id="card-name" placeholder="John Doe" required>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="expiry-date">Expiry Date</label>
+                                        <input type="text" class="form-control" id="expiry-date" placeholder="MM/YY" maxlength="5" pattern="\d{2}/\d{2}" required>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="cvv">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="3" pattern="\d{3}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- UPI Option -->
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="payment_method" id="upi" value="upi">
+                                <label class="form-check-label" for="upi">
+                                    <i class="fas fa-mobile-alt mr-2"></i> UPI
+                                </label>
+                            </div>
+                            <div id="upi-details" class="ml-4 mb-4" style="display: none;">
+                                <div class="form-group">
+                                    <label for="upi-id">UPI ID</label>
+                                    <input type="text" class="form-control" id="upi-id" placeholder="name@upi" pattern=".+@.+" disabled>
+                                    <small class="form-text text-muted">Enter your UPI ID (e.g. name@upi)</small>
+                                </div>
+                                <div class="alert alert-info">
+                                    After clicking "Pay", you'll be redirected to your UPI app for payment confirmation.
+                                </div>
+                            </div>
+
+                            <!-- COD Option -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod">
+                                <label class="form-check-label" for="cod">
+                                    <i class="fas fa-money-bill-wave mr-2"></i> Cash on Delivery
+                                </label>
+                            </div>
+                            <div id="cod-details" class="ml-4 mt-2" style="display: none;">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-info-circle"></i> Pay cash when your order is delivered
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn bg-info text-white btn-block mt-4" id="pay-button">
+                            Pay ₹{{ order.total_price }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Order #{{ order.id }}</h5>
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <h6>Delivery Address</h6>
+                        <p>
+                            {{ order.delivery_address.name }}<br>
+                            {{ order.delivery_address.street_address }}<br>
+                            {{ order.delivery_address.city }}, {{ order.delivery_address.state }} - {{ order.delivery_address.zip_code }}<br>
+                            Phone: {{ order.delivery_address.phone_number }}
+                        </p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Products</h6>
+                    <ul class="list-group mb-3">
+                        {% for item in order.items.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ item.product.name }} (x{{ item.quantity }})
+                            <span>₹{{ item.price }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong>₹{{ order.total_price }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment method toggle
+    const paymentMethods = {
+        'credit-card': document.getElementById('credit-card-details'),
+        'upi': document.getElementById('upi-details'),
+        'cod': document.getElementById('cod-details')
+    };
+    
+    const paymentInputs = document.querySelectorAll('input[name="payment_method"]');
+    
+    paymentInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Hide all details first
+            Object.values(paymentMethods).forEach(el => {
+                el.style.display = 'none';
+                const inputs = el.querySelectorAll('input');
+                inputs.forEach(i => i.disabled = true);
+            });
+            
+            // Show selected method's details
+            const selectedMethod = paymentMethods[this.id];
+            if (selectedMethod) {
+                selectedMethod.style.display = 'block';
+                const inputs = selectedMethod.querySelectorAll('input');
+                inputs.forEach(i => i.disabled = false);
+            }
+        });
+    });
+    
+    // Format card number input
+    const cardNumber = document.getElementById('card-number');
+    cardNumber.addEventListener('input', function() {
+        let value = this.value.replace(/\s+/g, '');
+        if (value.length > 0) {
+            value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+        }
+        this.value = value;
+    });
+    
+    // Format expiry date input
+    const expiryDate = document.getElementById('expiry-date');
+    expiryDate.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        this.value = value;
+    });
+    
+    // Form submission
+    const form = document.getElementById('payment-form');
+    const payButton = document.getElementById('pay-button');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate form
+        const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        let isValid = true;
+        
+        if (selectedMethod === 'credit_card') {
+            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+            if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+                alert('Please enter a valid 16-digit card number');
+                isValid = false;
+            }
+            
+            const expiry = document.getElementById('expiry-date').value;
+            if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                alert('Please enter a valid expiry date (MM/YY)');
+                isValid = false;
+            }
+            
+            const cvv = document.getElementById('cvv').value;
+            if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
+                alert('Please enter a valid 3-digit CVV');
+                isValid = false;
+            }
+        } else if (selectedMethod === 'upi') {
+            const upiId = document.getElementById('upi-id').value;
+            if (!/.+@.+/.test(upiId)) {
+                alert('Please enter a valid UPI ID (e.g. name@upi)');
+                isValid = false;
+            }
+        }
+        
+        if (!isValid) return;
+        
+        // Show loading state
+        payButton.disabled = true;
+        payButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        // Simulate API call delay
+        setTimeout(function() {
+            form.submit();
+        }, 2000);
+    });
+    
+    // Trigger change event to show credit card by default
+    document.getElementById('credit-card').dispatchEvent(new Event('change'));
+});
+</script>
+
+<style>
+#credit-card-details, #upi-details, #cod-details {
+    border-left: 3px solid #007bff;
+    padding-left: 15px;
+}
+
+.form-check-input {
+    margin-top: 0.3rem;
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Improve input styling */
+.form-control {
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Payment method icons */
+.form-check-label i {
+    width: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %}

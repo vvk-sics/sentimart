@@ -27,6 +27,9 @@ urlpatterns = [
     path('addresses/<int:address_id>/delete/', views.delete_address, name='delete_address'),
     path('addresses/<int:address_id>/set-default/', views.set_default_address, name='set_default_address'),
     path('api/search/suggestions/', views.search_suggestions, name='search-suggestions'),
+    path('payment/', views.payment, name='payment'),
+    path('order/success/<int:order_id>/', views.order_success, name='order_success'),
+    path('payment/webhook/', views.payment_webhook, name='payment_webhook'),
 
     # path('search/', views.search_products, name='search_products'),
 

@@ -1,42 +1,62 @@
 {% extends './buyer_base.html' %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl font-semibold mb-4">Place Your Order</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="bg-white p-6 rounded shadow-md">
-            <h3 class="text-xl font-medium mb-2">Delivery Address:</h3>
-            <div class="mb-4 border-b">
-                <div class="flex items-start space-x-6">
-                    <!-- <img src="{{ default_address.image.url }}" class="w-12 h-12" alt="Profile Image"> -->
-                    <div>
-                        <p class="font-medium">{{ default_address.name }}</p>
-                        <p class="text-sm">{{ default_address.phone_number }}</p>
-                        <p class="text-sm">{{ default_address.street_address }}, {{ default_address.apartment }}, {{ default_address.city }}, {{ default_address.state }} {{ default_address.zip_code }}</p>
-                    </div>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4>Review Your Order</h4>
                 </div>
-                <a href="{% url 'address_list' %}" class="text-blue-500 underline">Change Address</a>
+                <div class="card-body">
+                    <h5>Cart Items</h5>
+                    <ul class="list-group mb-4">
+                        {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ item.product.name }} (x{{ item.quantity }})
+                            <span>₹{{ item.product.base_price }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Total:</strong>
+                        <strong>₹{{ total_price }}</strong>
+                    </div>
+                    
+                    <h5 class="mt-4">Delivery Address</h5>
+                    {% if default_address %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p>
+                                <strong>{{ default_address.name }}</strong><br>
+                                {{ default_address.street_address }}<br>
+                                {{ default_address.city }}, {{ default_address.state }} - {{ default_address.zip_code }}<br>
+                                Phone: {{ default_address.phone_number }}
+                            </p>
+                        </div>
+                        <a href="{% url 'address_list' %}" class="text-blue-500 underline">Change Address</a>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        No default address set. Please add an address first.
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">I agree to the Terms & Conditions</label>
+                        </div>
+                        
+                        <button type="submit" class="btn bg-info text-white btn-block" {% if not default_address %}disabled{% endif %}>
+                            Proceed to Payment
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="bg-white p-6 rounded shadow-md mt-4">
-            <h3 class="text-xl font-medium mb-2">Your Items:</h3>
-            <ul class="mb-4">
-                {% for item in cart_items %}
-                <li class="flex justify-between items-center border-b py-4">
-                    <div class="flex items-start space-x-6">
-                        <img src="{{ item.product.image.url }}" class="w-12 h-12" alt="Product Image">
-                        <div>
-                            <p class="font-medium">{{ item.product.name }}</p>
-                            <p class="text-sm">Qty: {{ item.quantity }}</p>
-                        </div>
-                    </div>
-                    <p class="text-right">₹{{ item.price }}</p>
-                </li>
-                {% endfor %}
-            </ul>
-            <p class="font-bold mb-4">Total: ₹{{ total_price }}</p>
-        </div>
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Confirm Order</button>
-    </form>
+    </div>
 </div>
 {% endblock %}

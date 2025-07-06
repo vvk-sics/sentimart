@@ -1,9 +1,43 @@
 {% extends './buyer_base.html' %}
+
 {% block content %}
-<h2 class="text-2xl font-bold text-center mb-4">Order Confirmed!</h2>
-<div class="p-6 border rounded shadow">
-    <p class="mb-2">Thank you for your order!</p>
-    <p>Your order ID is <strong>#{{ order.id }}</strong>.</p>
-    <a href="{% url 'view_invoice' order.id %}" class="text-blue-500 underline mt-4 block text-center">View Invoice</a>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3>Order Confirmed!</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <h4 class="mb-3">Thank you for your order!</h4>
+                    <p class="lead">Your order #{{ order.id }} has been placed successfully.</p>
+                    
+                    <div class="alert alert-info mt-4">
+                        <p class="mb-1">Invoice #: {{ invoice.invoice_id }}</p>
+                        <p class="mb-1">Total Paid: ₹{{ order.total_price }}</p>
+                        <p class="mb-0">Payment Method: {{ order.get_payment_method_display }}</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'view_invoice' order_id=order.id %}" class="btn btn-primary mr-2">
+                            <i class="fas fa-file-invoice"></i> View Invoice
+                        </a>
+                        <a href="{% url 'track_order' order_id=order.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-truck"></i> Track Order
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'buyer-home' %}" class="btn btn-link">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

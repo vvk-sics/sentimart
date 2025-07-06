@@ -353,10 +353,12 @@ def place_order(request):
                 messages.error(request, f"Not enough stock for {item.product.name}.")
                 return redirect('cart')
 
+        # Create order but don't process it yet
         order = Order.objects.create(
             user=request.user,
             delivery_address=default_address,
-            total_price=total
+            total_price=total,
+            status='pending_payment'  # Add this status to your Order model
         )
 
         for item in cart_items:
@@ -366,13 +368,11 @@ def place_order(request):
                 quantity=item.quantity,
                 price=item.product.base_price
             )
-            item.product.stock -= item.quantity
-            item.product.save()
 
-        cart_items.delete()
-
-        Invoice.objects.create(order=order, invoice_id=str(uuid.uuid4())[:8].upper())
-        return render(request, 'buyer/order_success.html', {'order': order})
+        # Store order ID in session for payment processing
+        request.session['current_order_id'] = order.id
+        
+        return redirect('payment')
 
     total_price = sum(item.product.base_price * item.quantity for item in cart_items)
     return render(request, 'buyer/place_order.html', {
@@ -380,6 +380,57 @@ def place_order(request):
         'total_price': total_price,
         'default_address': default_address
     })
+
+# Add these new views for payment handling
+@login_required
+def payment(request):
+    order_id = request.session.get('current_order_id')
+    if not order_id:
+        return redirect('cart')
+    
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    if request.method == 'POST':
+        # Get payment method
+        payment_method = request.POST.get('payment_method')
+        # Update order with payment method
+        order.payment_method = payment_method
+        order.status = 'processing'
+        order.save()
+        
+        # Clear cart
+        CartItem.objects.filter(user=request.user).delete()
+        
+        # Clear session
+        if 'current_order_id' in request.session:
+            del request.session['current_order_id']
+        
+        # Create invoice
+        Invoice.objects.create(order=order, invoice_id=str(uuid.uuid4())[:8].upper())
+        
+        return redirect('order_success', order_id=order.id)
+    
+    return render(request, 'buyer/payment.html', {
+        'order': order,
+    })
+
+@login_required
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    invoice = get_object_or_404(Invoice, order=order)
+    return render(request, 'buyer/order_success.html', {
+        'order': order,
+        'invoice': invoice,
+    })
+
+# Dummy payment webhook (for simulation)
+@csrf_exempt
+def payment_webhook(request):
+    if request.method == 'POST':
+        # In a real app, you'd verify the payment here
+        # For demo, we'll just return success
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def view_invoice(request, order_id):
     order = get_object_or_404(Order, pk=order_id, user=request.user)

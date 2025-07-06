@@ -96,6 +96,11 @@ class Order(models.Model):
         ('Delivered', 'Delivered'),
         ('Rejected', 'Rejected'),
     ]
+    PAYMENT_METHOD_CHOICES = [
+        ('credit_card', 'Credit/Debit Card'),
+        ('upi', 'UPI'),
+        ('cod', 'Cash on Delivery'),
+    ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     delivery_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -105,6 +110,11 @@ class Order(models.Model):
     assigned_to = models.ForeignKey(DeliveryAgent, null=True, blank=True, on_delete=models.SET_NULL)
     issue_reason = models.TextField(blank=True, null=True)
     delivery_rating = models.FloatField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES,
+        default='credit_card'
+    )
 
     def save(self, *args, **kwargs):
         # Update agent rating when order is delivered with rating
