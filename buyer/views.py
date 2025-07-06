@@ -131,14 +131,14 @@ def edit_buyer_profile(request):
 @login_required
 @never_cache
 def buyer_home(request):
-    # Common data for both URLs
+    
     categories = Category.objects.all()
     popular_products = get_popular_products(limit=8)
     
-    # Search-specific logic
+    
     query = request.GET.get('q', '').strip()
     if query:
-        # Search in product fields and category names
+       
         search_results = Product.objects.filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
@@ -148,7 +148,7 @@ def buyer_home(request):
             status='approved'
         ).distinct().order_by('-created_at')
         
-        # If no direct matches, try fuzzy search with individual words
+       
         if not search_results.exists():
             words = query.split()
             if len(words) > 1:
