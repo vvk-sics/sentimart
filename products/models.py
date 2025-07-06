@@ -39,6 +39,7 @@ class Product(models.Model):
     rejection_reason = models.TextField(null=True, blank=True) 
     sku = models.CharField(max_length=100, unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     
     def __str__(self):
 
@@ -127,7 +128,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='orderitems')
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)

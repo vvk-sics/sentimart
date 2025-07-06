@@ -127,14 +127,26 @@ def edit_buyer_profile(request):
 
 #     return recommendations
 
-
+from django.db.models import Count
+from django.db.models import Subquery, OuterRef
 @login_required
 @never_cache
 def buyer_home(request):
     
     categories = Category.objects.all()
     popular_products = get_popular_products(limit=8)
+    popular_product_ids = OrderItem.objects.values('product') \
+        .annotate(order_count=Count('id')) \
+        .order_by('-order_count') \
+        .values_list('product', flat=True)[:1]
+
+    best_seller = Product.objects.filter(
+        id__in=Subquery(popular_product_ids),
+        status='approved'
+    ).first()
     
+    if not best_seller and popular_products:
+        best_seller = popular_products[0]
     
     query = request.GET.get('q', '').strip()
     if query:
@@ -172,6 +184,7 @@ def buyer_home(request):
             'search_results': search_results,
             'categories': categories,
             'popular_products': popular_products,
+            'best_seller': best_seller,
         }
         return render(request, 'buyer/buyer_home.html', context)
   
@@ -189,6 +202,7 @@ def buyer_home(request):
         'categories': categories,
         'popular_products': popular_products,
         'personalized_products': personalized_products,
+        'best_seller': best_seller,
     }
     return render(request, 'buyer/buyer_home.html', context)
 

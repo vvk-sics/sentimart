@@ -334,19 +334,23 @@
             </ul>
         </section>
         <!-- Best Seller Banner -->
-        <section
-            class="mt-10 rounded-xl bg-yellow-100 p-6 flex flex-col sm:flex-row items-center justify-between max-w-full"
-            aria-label="Best seller Samsung Galaxy S24 Ultra 5G with up to 20% off">
+        {% if best_seller %}
+        <section class="mt-10 rounded-xl bg-yellow-100 p-6 flex flex-col sm:flex-row items-center justify-between max-w-full"
+            aria-label="Best seller {{ best_seller.name }} with up to {{ best_seller.discount_percentage|floatformat:0 }}% off">
             <div class="max-w-[60%] sm:max-w-[50%] mb-4 sm:mb-0">
                 <p class="text-sm font-normal mb-1">Best seller</p>
-                <h2 class="text-xl sm:text-2xl font-normal mb-1">SAMSUNG Galaxy S24 Ultra 5G</h2>
-                <p class="text-sm font-normal mb-3">UP to 20% OFF</p> <button type="button"
-                    class="text-xs font-normal border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-200"> View
-                    more </button>
-            </div> <img src="https://s3-alpha-sig.figma.com/img/191b/565c/c43e835bf0798c68a0e12ea2f2778a06?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=iBBbK7TWc7NxQafRxYt3Zmvt-j17EYxJdjizSGflF1Yib9~SQw0Ipv-BCW~x6AD-vP9FV~uPPyQ~OyfIl5f1J95JWIoREGoBtYIghZuuMyl0iB-VCh3kUj~YskQDpbUoqOcbCvvSDJARl1bYabDsA~f~mWXA0vvqE8pvl9XaVK2zWFHU7q2sujQ43-P-EWxqPI1NXX4SYIHdwtB2hzTK6hgXEbSDW5KVaEoFhMwhuQmWRSyBLyxKnAIb4PAc1dw721h8bzpm-fmU-SASLQuCzylDeaZ0HfsYG8enBOT83Be-EavvIBsXnLlvsdMBHdQn2Er6Wjw5YJFPFe1XhhVE6w__"
-                alt="Samsung Galaxy S24 Ultra 5G smartphone front view with gold color and stylus"
+                <h2 class="text-xl sm:text-2xl font-normal mb-1">{{ best_seller.name|upper }}</h2>
+                <p class="text-sm font-normal mb-3">UP to {{ best_seller.discount_percentage|floatformat:0 }}% OFF</p>
+                <a href="{% url 'product-detail' pk=best_seller.id %}" 
+                class="text-xs font-normal border border-gray-600 rounded-full px-3 py-1 hover:bg-gray-200 inline-block">
+                    View more
+                </a>
+            </div>
+            <img src="{{ best_seller.image.url }}"
+                alt="{{ best_seller.name }}"
                 class="w-[160px] h-[160px] object-contain" />
         </section>
+        {% endif %}
     </main>
 
 {% endblock %}
