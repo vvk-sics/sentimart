@@ -39,8 +39,9 @@
                 <div class="relative mb-8"> <input id="password" name="password" type="password"
                         placeholder="Enter password"
                         class="w-full border border-[#4a8287] rounded-md px-4 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#4a8287]" />
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"> <i
-                            class="fas fa-eye-slash"></i> </span> </div>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer" onclick="togglePassword()">
+                        <i class="fas fa-eye-slash" id="eye"></i>
+                    </span> </div>
                 <button type="submit" class="w-full bg-[#4a8287] text-white py-3 rounded-lg text-base font-normal hover:bg-[#3b6a6f] transition-colors">
                     Sign in
                 </button>
@@ -52,6 +53,21 @@
             </form>
         </div>
     </main>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        }
+    </script>
 </body>
 
 </html>
