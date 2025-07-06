@@ -83,3 +83,48 @@ def get_personalized_recommendations(user_id, limit=5):
     products = Product.objects.filter(id__in=recommended_products)[:limit]
     
     return products
+
+def enhance_search_with_keywords(query, products):
+    """
+    Enhanced search for small catalogs that:
+    1. Prioritizes exact matches
+    2. Boosts matches in important fields
+    3. Uses simple keyword matching
+    """
+    if not query or not products:
+        return products
+    
+    query = query.lower().strip()
+    query_words = query.split()
+    
+    scored_products = []
+    
+    for product in products:
+        score = 0
+        
+        # Fields to check with different weights
+        fields = [
+            (product.name.lower(), 3),          # Highest priority
+            (product.brand_name.lower(), 2),    # Medium priority
+            (product.description.lower(), 1),   # Lower priority
+            (product.category.name.lower(), 2)  # Medium priority
+        ]
+        
+        # Exact match bonus
+        for field_text, weight in fields:
+            if query in field_text:
+                score += 10 * weight  # Big bonus for exact match
+        
+        # Partial/word match
+        for word in query_words:
+            for field_text, weight in fields:
+                if word in field_text:
+                    score += weight
+        
+        # Add base score so all products stay in original order if no matches
+        scored_products.append((product, score + 1))
+    
+    # Sort by score (descending) but keep original order for same scores
+    scored_products.sort(key=lambda x: -x[1])
+    
+    return [p for p, score in scored_products]

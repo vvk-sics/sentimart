@@ -145,6 +145,7 @@ def buyer_home(request):
         status='approved'
     ).first()
     
+
     if not best_seller and popular_products:
         best_seller = popular_products[0]
     
