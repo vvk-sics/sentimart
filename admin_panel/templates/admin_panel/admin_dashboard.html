@@ -1,118 +1,248 @@
 {% extends 'admin_base.html' %}
+{% load humanize %}
 
 {% block content %}
 </aside>
-        <main class="flex-1 p-6">
-            <h1 class="text-[#4a7a82] font-semibold text-lg mb-4">Welcome user !</h1>
-            <hr class="border-gray-300 mb-6 shadow-[0_4px_4px_-2px_rgba(0,0,0,0.1)]" />
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-                <div class="border border-[#4a7a82] rounded-lg flex items-center space-x-4 px-6 py-6">
-                    <div class="bg-[#4a7a82] rounded-md w-10 h-10 flex items-center justify-center text-black text-xl">
-                        <i class="fas fa-briefcase"></i> </div>
-                    <div>
-                        <p class="text-sm">Buyers</p>
-                        <p class="text-sm">{{ buyer_count }}</p>
-                    </div>
+<main class="flex-1 p-6">
+    <h1 class="text-[#4a7a82] font-semibold text-2xl mb-4">Admin Dashboard</h1>
+    <hr class="border-gray-300 mb-6 shadow-[0_4px_4px_-2px_rgba(0,0,0,0.1)]" />
+    
+    <!-- Top Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Total Revenue -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Revenue</p>
+                    <h3 class="text-2xl font-bold">₹{{ total_revenue|intcomma }}</h3>
                 </div>
-                <div class="border border-[#4a7a82] rounded-lg flex items-center space-x-4 px-6 py-6">
-                    <div class="bg-[#4a7a82] rounded-md w-10 h-10 flex items-center justify-center text-black text-xl">
-                        <i class="fas fa-tag"></i> </div>
-                    <div>
-                        <p class="text-sm">Sellers</p>
-                        <p class="text-sm">{{ sellers_count }}</p>
-                    </div>
-                </div>
-                <div class="border border-[#4a7a82] rounded-lg flex items-center space-x-4 px-6 py-6">
-                    <div class="bg-[#4a7a82] rounded-md w-10 h-10 flex items-center justify-center text-black text-xl">
-                        <i class="fas fa-truck"></i> </div>
-                    <div>
-                        <p class="text-sm">Delivery agents</p>
-                        <p class="text-sm">{{ delivery_agent_count }}</p>
-                    </div>
-                </div>
-            </div> <!-- Middle section with chart and side cards -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 ml-8"> <!-- Chart card -->
-                <section class="border border-[#4a7a82] rounded-lg p-6 col-span-2" aria-label="Best selling products">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-semibold text-gray-800 text-lg">Best selling products</h2> <button
-                            class="border border-gray-300 rounded-md px-3 py-1 text-xs text-gray-600 flex items-center space-x-1 hover:bg-gray-100"
-                            aria-label="Yearly"> <i class="far fa-calendar-alt"></i> <span>Yearly</span> </button>
-                    </div>
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                        <div class="w-full max-w-[280px] mx-auto lg:mx-0"> <img
-                                src="https://s3-alpha-sig.figma.com/img/d38e/71e0/9db3f4e0c4cacc647f5ff5226cbd30e4?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=gYhGrS4cEbrOgfu0~U82mRMlYz8IkgQtv7IrELmlVbytkNawhs3Bc9kd3xeikaYNUkNah7nW~wM5LbFlAlbRFSM8oQbL3pU~yTaf57nlLtsiJvPVJhEvcrncN~RO1tNDI8lyBL~68REzs2rwmmO6oVq1QscOmh6mjB5iRktCMENAIIkPGKLVCpCNOXL9sM-nBHeIHffmJ--1kK5SwIe2p6deW3tHa~FScohSVd5uIVE5VXcroAujMht4CjX4laJdA5V5kmBUxzwUnZscY3Yfgcqv3AXyEJ~jowDKm2gVT6LCLI4Ml3J3mM8gmQl6Px~Fx6QTXX0Fp~W3U-9yqOy39g__"
-                                alt="Donut chart showing best selling products with percentages: 27%, 24%, 16%, 15%, 13%, 5%"
-                                class="mx-auto" width="280" height="280" /> </div>
-                        <ul class="mt-6 lg:mt-0 space-y-2 text-xs text-gray-800 max-w-[280px]">
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#9ca92f] block flex-shrink-0"></span> <span>SAMSUNG
-                                    Galaxy S24 Ultra</span> </li>
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#3a8a7a] block flex-shrink-0"></span> <span>Amazfit GTR
-                                    2</span> </li>
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#0f7a8a] block flex-shrink-0"></span> <span>Iphone 15
-                                    pro</span> </li>
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#5a2a6a] block flex-shrink-0"></span> <span>Blue Heaven
-                                    Bridal Makeup</span> </li>
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#7a3a7a] block flex-shrink-0"></span> <span>Tuft Velvet
-                                    sofa</span> </li>
-                            <li class="flex items-center space-x-2"> <span
-                                    class="w-4 h-4 rounded bg-[#e86a7a] block flex-shrink-0"></span> <span>Bonsai Wild
-                                    Artificial Plant</span> </li>
-                        </ul>
-                    </div>
-                </section> <!-- Right side cards -->
-                <div class="flex flex-col space-y-6 ml-5">
-                    <div class="border border-[#4a7a82] rounded-lg p-4 max-w-xs w-full"
-                        aria-label="Top selling product">
-                        <p class="text-[#4a7a82] text-xs font-semibold mb-2 text-center">Top selling product</p>
-                        <div class="flex items-center space-x-3 mb-2 ml-2"> <img
-                                src="https://s3-alpha-sig.figma.com/img/cf4a/b00c/92c05b00752f02eb266759947576198a?Expires=1745798400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=ZVI9A9FZ7B1-64BPBfyR-~59DB7HH9h8fPq7rnfsG0fJeqc1zfVCxH6y7RkWvA7-woibt8aLsuJt~0eSa6ZHksENb3qnhCWsc1OgwFyYjCtZN8KBp5a5WWx7VWTB4RoGryd~vKQ9iBh2v61fVMcuIhfCZwqPxFAIdvj-a52IMZJ7ETrUkeAvT4FtlFBWbZ7hnAvK~ywqMg~jZ9ebfAe26Ob5LLlwcsmBxkvIe1~~XgWworqhPZhgI-CrIexz0-~BXSdK~zl-~JFBlD5jKMLZeinoPs5fwNzrA34GRp9wZDts6auvlSQx6k7Z3OogIAeI8oQQ~ZQAu3qdkjt-~tjVRA__"
-                                alt="Samsung Galaxy S24 Ultra phone in Titanium Yellow color vertical image" width="60"
-                                height="90" class="rounded" />
-                            <div class="text-xs">
-                                <p class="font-bold text-black">SAMSUNG Galaxy S24 Ultra</p>
-                                <p class="text-gray-700">Titanium Yellow</p>
-                            </div>
-                        </div> <button
-                            class="block mx-auto border border-[#4a7a82] rounded-full px-4 py-1 text-xs text-[#4a7a82] hover:bg-[#4a7a82] hover:text-white transition"
-                            aria-label="View all top selling products"> View All </button>
-                    </div>
-                    <div class="border border-red-500 rounded-lg p-6 max-w-xs w-full text-center"
-                        aria-label="Stock alert"> <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-3"></i>
-                        <p class="text-red-500 font-semibold mb-3">Stock Alert</p> <button
-                            class="border border-red-500 rounded-full px-6 py-1 text-xs text-red-500 hover:bg-red-500 hover:text-white transition"
-                            aria-label="View all stock alerts"> View All </button>
-                    </div>
-                </div>
-            </div> <!-- Bottom cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div
-                    class="border border-[#4a7a82] rounded-lg p-6 max-w-xs w-full mx-auto flex flex-col items-center space-y-4">
-                    <i class="fas fa-tag text-purple-600 text-2xl"></i>
-                    <p class="text-sm">Sellers Request {{ sellers_request_count }}</p> <a href="{% url 'seller_requests' %}"
-                        class="border border-[#4a7a82] rounded-full px-6 py-1 text-xs text-[#4a7a82] hover:bg-[#4a7a82] hover:text-white transition"
-                        aria-label="View all sellers requests"> View All </a>
-                </div>
-                <div
-                    class="border border-[#4a7a82] rounded-lg p-6 max-w-xs w-full mx-auto flex flex-col items-center space-y-4">
-                    <i class="fas fa-shopping-bag text-orange-600 text-2xl"></i>
-                    <p class="text-sm">Product Request 0</p> <button
-                        class="border border-[#4a7a82] rounded-full px-6 py-1 text-xs text-[#4a7a82] hover:bg-[#4a7a82] hover:text-white transition"
-                        aria-label="View all product requests"> View All </button>
-                </div>
-                <div
-                    class="border border-[#4a7a82] rounded-lg p-6 max-w-xs w-full mx-auto flex flex-col items-center space-y-4">
-                    <i class="fas fa-truck text-[#4a7a82] text-2xl"></i>
-                    <p class="text-sm">Delivery Request 0</p> <button
-                        class="border border-[#4a7a82] rounded-full px-6 py-1 text-xs text-[#4a7a82] hover:bg-[#4a7a82] hover:text-white transition"
-                        aria-label="View all delivery requests"> View All </button>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-rupee-sign text-blue-600"></i>
                 </div>
             </div>
-        </main>
-
+            <div class="mt-4 flex justify-between text-sm">
+                <span class="text-green-600">
+                    <i class="fas fa-arrow-up"></i> Weekly ₹{{ weekly_revenue|intcomma }}
+                </span>
+                <span class="text-blue-600">
+                    <i class="fas fa-calendar"></i> Monthly ₹{{ monthly_revenue|intcomma }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Total Orders -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Orders</p>
+                    <h3 class="text-2xl font-bold">{{ total_orders }}</h3>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-shopping-cart text-green-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-between text-sm">
+                <span class="text-yellow-600">
+                    <i class="fas fa-clock"></i> Pending {{ pending_orders }}
+                </span>
+                <span class="text-green-600">
+                    <i class="fas fa-check"></i> Completed {{ completed_orders }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Users -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Users</p>
+                    <h3 class="text-2xl font-bold">{{ buyer_count|add:sellers_count|add:delivery_agent_count }}</h3>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-full">
+                    <i class="fas fa-users text-purple-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-2 text-xs">
+                <span class="text-center">
+                    <i class="fas fa-user-tie"></i> Sellers {{ sellers_count }}
+                </span>
+                <span class="text-center">
+                    <i class="fas fa-user"></i> Buyers {{ buyer_count }}
+                </span>
+                <span class="text-center">
+                    <i class="fas fa-truck"></i> Agents {{ delivery_agent_count }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Pending Requests -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Pending Requests</p>
+                    <h3 class="text-2xl font-bold">{{ sellers_request_count }}</h3>
+                </div>
+                <div class="bg-yellow-100 p-3 rounded-full">
+                    <i class="fas fa-exclamation-circle text-yellow-600"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{% url 'seller_requests' %}" class="text-blue-600 text-sm hover:underline">
+                    View Seller Requests <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
     </div>
+    
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- Best Selling Products -->
+        <div class="bg-white rounded-lg shadow p-6 lg:col-span-2">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-semibold text-lg">Best Selling Products</h2>
+                <a href="{% url 'manage_products' %}" class="text-blue-600 text-sm hover:underline">
+                    View All <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sold</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for product in best_sellers %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
+                                        <div class="text-sm text-gray-500">{{ product.brand_name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ product.category.name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ product.total_sold|default:0 }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ₹{{ product.total_revenue|default:0|intcomma }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="space-y-6">
+            <!-- Recent Orders -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-lg">Recent Orders</h2>
+                    <a href="{% url 'order_management' %}" class="text-blue-600 text-sm hover:underline">
+                        View All <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for order in recent_orders %}
+                    <div class="border-b pb-3 last:border-0 last:pb-0">
+                        <div class="flex justify-between">
+                            <span class="font-medium">#{{ order.id }}</span>
+                            <span class="text-sm text-gray-500">{{ order.created_at|date:"M d" }}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">₹{{ order.total_price|intcomma }}</div>
+                        <div class="text-xs mt-1">
+                            <span class="px-2 py-1 rounded-full 
+                                {% if order.status == 'completed' %}bg-green-100 text-green-800
+                                {% elif order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-blue-100 text-blue-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Low Stock Alerts -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-lg">Low Stock Alerts</h2>
+                    <a href="{% url 'low_stock_products' %}" class="text-blue-600 text-sm hover:underline">
+                        View All <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="space-y-3">
+                    {% for product in low_stock_products %}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-10 h-10 rounded mr-3">
+                            <div>
+                                <div class="text-sm font-medium">{{ product.name|truncatechars:20 }}</div>
+                                <div class="text-xs text-gray-500">{{ product.category.name }}</div>
+                            </div>
+                        </div>
+                        <span class="text-sm font-medium 
+                            {% if product.stock < 5 %}text-red-600
+                            {% else %}text-yellow-600{% endif %}">
+                            {{ product.stock }} left
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-semibold text-lg">Quick Actions</h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{% url 'manage_products' %}" class="p-4 border rounded-lg text-center hover:bg-gray-50 transition">
+                <div class="text-blue-600 mb-2">
+                    <i class="fas fa-box-open text-2xl"></i>
+                </div>
+                <p class="text-sm font-medium">Manage Products</p>
+            </a>
+            
+            <a href="{% url 'order_management' %}" class="p-4 border rounded-lg text-center hover:bg-gray-50 transition">
+                <div class="text-green-600 mb-2">
+                    <i class="fas fa-shopping-bag text-2xl"></i>
+                </div>
+                <p class="text-sm font-medium">Order Management</p>
+            </a>
+            
+            <a href="{% url 'add_category' %}" class="p-4 border rounded-lg text-center hover:bg-gray-50 transition">
+                <div class="text-purple-600 mb-2">
+                    <i class="fas fa-tags text-2xl"></i>
+                </div>
+                <p class="text-sm font-medium">Add Category</p>
+            </a>
+            
+            <a href="{% url 'seller_requests' %}" class="p-4 border rounded-lg text-center hover:bg-gray-50 transition">
+                <div class="text-yellow-600 mb-2">
+                    <i class="fas fa-user-plus text-2xl"></i>
+                </div>
+                <p class="text-sm font-medium">Seller Requests</p>
+            </a>
+        </div>
+    </div>
+</main>
 {% endblock %}

@@ -8,6 +8,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Sum
 # Create your views here.
 
 @login_required
@@ -17,11 +20,54 @@ def dashboard(request):
     buyer_count = Buyer.objects.count()
     delivery_agent_count = DeliveryAgent.objects.count()
     sellers_request_count = Seller.objects.filter(is_approved=False, is_rejected=False).count()
+    
+    # Sales data
+    today = timezone.now().date()
+    start_week = today - timedelta(days=today.weekday())
+    start_month = today.replace(day=1)
+    
+    # Revenue calculations
+    total_revenue = Order.objects.aggregate(total=Sum('total_price'))['total'] or 0
+    weekly_revenue = Order.objects.filter(
+        created_at__date__gte=start_week
+    ).aggregate(total=Sum('total_price'))['total'] or 0
+    monthly_revenue = Order.objects.filter(
+        created_at__date__gte=start_month
+    ).aggregate(total=Sum('total_price'))['total'] or 0
+    
+    # Order counts
+    total_orders = Order.objects.count()
+    pending_orders = Order.objects.filter(status='pending').count()
+    completed_orders = Order.objects.filter(status='completed').count()
+    
+    # Best selling products (last 30 days)
+    best_sellers = Product.objects.annotate(
+    total_sold=Sum('orderitems__quantity')
+    ).filter(
+        orderitems__order__created_at__gte=timezone.now()-timedelta(days=30)
+    ).order_by('-total_sold')[:5]
+    
+    # Recent orders
+    recent_orders = Order.objects.order_by('-created_at')[:5]
+    
+    # Low stock alerts
+    low_stock_products = Product.objects.filter(stock__lt=10)[:5]
+    
     context = {
         'sellers_count': sellers_count,
         'sellers_request_count': sellers_request_count,
         'buyer_count': buyer_count,
-        'delivery_agent_count': delivery_agent_count
+        'delivery_agent_count': delivery_agent_count,
+        'total_revenue': total_revenue,
+        'weekly_revenue': weekly_revenue,
+        'monthly_revenue': monthly_revenue,
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+        'completed_orders': completed_orders,
+        'best_sellers': best_sellers,
+        'recent_orders': recent_orders,
+        'low_stock_products': low_stock_products,
+        'today': today,
     }
     return render(request, 'admin_panel/admin_dashboard.html', context)
 

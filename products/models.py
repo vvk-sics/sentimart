@@ -4,8 +4,9 @@ from categories.models import Category
 from delivery_agent.models import DeliveryAgent
 from buyer.models import Address
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import F, Sum
+
 # Create your models here.
-# products/models.py
 
 class ProductAttribute(models.Model):
     name = models.CharField(max_length=100)
@@ -55,6 +56,12 @@ class Product(models.Model):
         if self.base_price > 0:
             return (self.discount / self.base_price) * 100
         return 0
+    
+    @property
+    def total_revenue(self):
+        return self.orderitems.aggregate(
+            total=Sum(F('price') * F('quantity'))
+        )['total'] or 0
     
 class ProductAttributeValue(models.Model):
     attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE, related_name='values', null=True, blank=True)
