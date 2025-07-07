@@ -117,30 +117,26 @@ def seller_dashboard(request):
     seller = request.user
     products = Product.objects.filter(seller=seller)
     
-    # Get all order items for this seller
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
     
-    # Dashboard metrics
     total_sales = sum(item.price * item.quantity for item in order_items)
     
-    # New orders in last 7 days
     new_orders = order_items.filter(
         order__created_at__gte=timezone.now()-timedelta(days=7)
     ).values('order').distinct().count()
     
-    # Unique customers (users who ordered this seller's products)
     customer_ids = order_items.values_list('order__user', flat=True).distinct()
     customers = len(customer_ids)
     
-    # Best selling products (top 6)
+ 
     best_sellers = products.annotate(
-        total_sold=Coalesce(Sum('orderitem__quantity'), 0)
+        total_sold=Coalesce(Sum('orderitems__quantity'), 0)
     ).order_by('-total_sold')[:6]
     
-    # Low stock alert (products with stock < 10)
+    
     low_stock = products.filter(stock__lt=10)
     
-    # Recent orders (last 6 distinct orders)
+  
     recent_orders = Order.objects.filter(
         id__in=order_items.values_list('order', flat=True).distinct()
     ).order_by('-created_at')[:6]
