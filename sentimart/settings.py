@@ -148,3 +148,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+GOOGLE_API_KEY = 'AIzaSyDA9AyotnfnQamjI4xFPjrFGATPPEn5eq4'

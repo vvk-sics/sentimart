@@ -1,37 +1,94 @@
 # chatbot/utils.py
 from products.models import Order
 from django.utils import timezone
+from django.conf import settings
+import google.generativeai as genai
+from google.api_core import exceptions as google_exceptions
+
+# Configure Gemini
+try:
+    genai.configure(api_key=settings.GOOGLE_API_KEY)
+    
+    # Use one of the actually available models from your console output
+    model = genai.GenerativeModel("models/gemini-1.5-flash")
+    
+    # Test the connection
+    test_response = model.generate_content("Test connection").text
+    print(f"✅ Gemini initialized successfully. Test response: {test_response}")
+    
+except Exception as e:
+    print(f"❌ Gemini initialization failed: {e}")
+    model = None
 
 class ChatbotEngine:
     def __init__(self, user):
         self.user = user
+        if model:
+            try:
+                self.gemini_chat = model.start_chat(history=[])
+                print("Chat session started with Gemini")
+            except Exception as e:
+                print(f"Failed to start chat: {e}")
+                self.gemini_chat = None
+        else:
+            self.gemini_chat = None
     
     def process_message(self, message):
-        message = message.lower().strip()
+        msg_lower = message.lower().strip()
         
-        # Order status queries
-        if any(keyword in message for keyword in ['order status', 'where is my order', 'track order', 'order tracking']):
+        # Specialized handlers (unchanged)
+        if any(q in msg_lower for q in ['track order', 'order status']):
             return self.handle_order_status()
-            
-        # Product information
-        elif any(keyword in message for keyword in ['prime', 'sentimart prime', 'membership']):
+        elif 'prime' in msg_lower or 'membership' in msg_lower:
             return self.handle_prime_question()
-            
-        # Payment questions
-        elif any(keyword in message for keyword in ['payment', 'refund', 'money back']):
+        elif any(q in msg_lower for q in ['payment', 'refund']):
             return self.handle_payment_questions()
-            
-        # Delivery questions
-        elif any(keyword in message for keyword in ['delivery', 'shipping', 'when will it arrive']):
+        elif any(q in msg_lower for q in ['delivery', 'shipping']):
             return self.handle_delivery_questions()
+        
+        # Try Gemini if available
+        if self.gemini_chat:
+            try:
+                return self.handle_with_gemini(message)
+            except Exception as e:
+                print(f"Gemini processing error: {e}")
+                return "Our product catalog has what you need! Visit our store to browse options."
+                
+        return self.default_response()
+        
+    def handle_with_gemini(self, message):
+        try:
+            response = self.gemini_chat.send_message(
+                f"""You are SentiMart's e-commerce assistant. Respond to:
+                Question: {message}
+                
+                Guidelines:
+                - Be concise (1-2 sentences)
+                - Mention product categories when relevant
+                - For product questions, suggest browsing our catalog
+                - Never say "I can help with..."
+                """,
+                generation_config={
+                    "temperature": 0.3,
+                    "max_output_tokens": 150
+                }
+            )
+            return self._sanitize_response(response.text)
             
-        # General help
-        elif any(keyword in message for keyword in ['help', 'support', 'contact']):
-            return self.handle_help_questions()
-            
-        # Default response
-        else:
+        except google_exceptions.GoogleAPIError as e:
+            print(f"Gemini API Error: {e}")
+            return "Our product catalog has what you need! Visit our store to browse options."
+        except Exception as e:
+            print(f"Unexpected Gemini error: {e}")
             return self.default_response()
+    
+    def _sanitize_response(self, text):
+        """Clean up Gemini responses for our chat interface"""
+        # Remove markdown formatting if present
+        clean_text = text.replace('**', '').replace('*', '')
+        # Ensure URLs are properly formatted
+        clean_text = clean_text.replace('](', ' (').replace('[', '')
+        return clean_text
     
     def handle_order_status(self):
         orders = Order.objects.filter(user=self.user).order_by('-created_at')[:3]
@@ -56,42 +113,46 @@ class ChatbotEngine:
 • Early access to sales and deals
 • Exclusive Prime-only discounts
 • 5% cashback on all purchases
+• Priority customer support
 
-Would you like to learn more about Prime benefits?"""
+Would you like to learn more or sign up for Prime?"""
     
     def handle_payment_questions(self):
         return """For payment-related questions:
 
 • We accept credit/debit cards, UPI, net banking, and wallet payments
 • Refunds are processed within 3-5 business days
+• Payment failures? Try again after 30 minutes
 • You can view payment options at checkout
 
-For specific payment issues, please contact our support team."""
-    
+For specific payment issues, please visit our Payments Help Center."""
+
     def handle_delivery_questions(self):
-        return """Our standard delivery takes 3-7 business days. 
+        return """Our delivery options:
 
-For Prime members:
-• Free 2-day delivery on most items
-• Same-day delivery available in select cities
+Standard Delivery: 3-7 business days (Free on orders ₹499+)
+Express Delivery: 2-3 business days (₹99)
+Prime Members: Free 2-day delivery on most items
 
-You can check estimated delivery dates on the product page or your order details."""
-    
+You can check exact delivery dates during checkout."""
+
     def handle_help_questions(self):
-        return """You can contact our customer support:
-        
+        return """Contact SentiMart Support:
+
 • Phone: 1800-123-4567 (24/7)
 • Email: support@sentimart.com
 • Live Chat: Available 8AM-10PM
+• Help Center: <a href='/help/'>Visit Help Center</a>
 
 What specific help do you need?"""
     
     def default_response(self):
-        return """I'm sorry, I didn't understand that. Here are some things I can help with:
+        return """I'm here to help with your SentiMart experience. Here are things I can assist with:
         
 • Track your order status
 • Explain SentiMart Prime benefits
 • Answer delivery questions
-• Help with payments
+• Help with payments and refunds
+• Product recommendations
 
 What would you like to know?"""
